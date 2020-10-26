@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/be_my_voice"
+        android:icon="@drawable/ic_baseline_chat_24"
+        android:title="@string/be_my_voice" />
+
+    <item
+        android:id="@+id/favourites"
+        android:icon="@drawable/ic_baseline_favorite_24"
+        android:title="@string/favourite" />
+
+    <item
+        android:id="@+id/video_dictionary"
+        android:icon="@drawable/ic_baseline_video_call_24"
+        android:title="@string/video_dictionary" />
+
+    <item
+        android:id="@+id/settings"
+        android:icon="@drawable/ic_baseline_settings_24"
+        android:title="@string/settings" />
+    <item
+        android:id="@+id/profile"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="@string/profile" />
+
+</menu>

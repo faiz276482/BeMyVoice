@@ -1,8 +1,32 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
+
+    packagingOptions {
+        exclude 'project.properties'
+//        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/INDEX.LIST'
+//        exclude 'google/protobuf/field_mask.proto'
+//        exclude 'google/protobuf/type.proto'
+//        exclude 'google/protobuf/api.proto'
+//        exclude 'google/protobuf/empty.proto'
+//        exclude 'google/protobuf/source_context.proto'
+//        exclude 'google/protobuf/wrappers.proto'
+//        exclude 'google/protobuf/struct.proto'
+//        exclude 'google/protobuf/any.proto'
+//        exclude 'google/protobuf/timestamp.proto'
+//        exclude 'google/protobuf/AbstractMessageLite'
+//        exclude 'google/protobuf/WireFormat'
+//        exclude 'google/protobuf/WrappersProto'
+//        exclude 'google/protobuf/Writer'
+//
+//        exclude 'google/api/Advice'
+//        exclude 'google/api/AdviceOrBuilder'
+    }
 
     defaultConfig {
         applicationId "com.nerdytech.bemyvoice"
@@ -20,14 +44,43 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    configurations {
+        implementation.exclude module:'proto-google-common-protos'
+        implementation.exclude module:'protolite-well-known-types'
+//        implementation.exclude module:'guava'
+        implementation.exclude module:'protobuf-lite'
+    }
+
 }
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
+    implementation 'com.google.android.gms:play-services-auth:18.1.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.navigation:navigation-fragment:2.3.1'
+    implementation 'androidx.navigation:navigation-ui:2.3.1'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    implementation('com.google.cloud:google-cloud-translate:1.12.0') {
+        exclude group: 'org.apache.httpcomponents'
+//        exclude group: 'com.google.guava'
+        exclude group: 'org.json', module: 'json'
+        exclude group: 'io.grpc', module: 'grpc-all'
+        exclude group: 'com.google.protobuf', module: 'protobuf-java'
+        exclude group: 'com.google.api-client', module: 'google-api-client-appengine'
+        exclude group: 'com.google.firebase', module: 'protolite-well-known-types'
+    }
+    annotationProcessor 'com.google.cloud:google-cloud-translate:1.12.0'
+    implementation 'com.google.firebase:firebase-auth:19.4.0'
+    implementation 'com.google.firebase:firebase-firestore:21.7.1'
+    implementation 'com.google.firebase:firebase-storage:19.2.0'
+//    configurations.implementation.exclude(group: 'com.google.firebase', module: 'protolite-well-known-types')
+
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
 }
