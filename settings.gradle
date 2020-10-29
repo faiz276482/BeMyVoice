@@ -1,2 +1,2 @@
-include ':app'
+include ':app', ':googlecloudtts'
 rootProject.name = "BeMyVoice"

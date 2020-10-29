@@ -315,22 +315,56 @@
         android:orientation="vertical"
         android:layout_above="@+id/fabs"
         android:layout_below="@id/scroll">
-        <EditText
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:id="@+id/edittext_RL"
+            android:layout_weight="1">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@drawable/bordered_backround"
             android:hint="@string/enter_the_text_here"
+            android:textColor="@android:color/black"
             android:gravity="top"
+            android:inputType="textMultiLine"
             android:padding="10dp"
             android:textAlignment="gravity"
             android:id="@+id/edittext"/>
+            <RelativeLayout
+                android:layout_width="122dp"
+                android:layout_height="40dp"
+                android:background="@drawable/button_background"
+                android:id="@+id/translate_btn"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="10dp"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_translate_24"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/translate_icon"
+                    android:layout_marginStart="10dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/translate"
+                    android:textColor="@android:color/white"
+                    android:layout_toEndOf="@+id/translate_icon"
+                    android:layout_centerVertical="true"
+                    android:textSize="17sp"
+                    android:layout_marginStart="7.5dp"/>
+            </RelativeLayout>
+        </RelativeLayout>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="@drawable/bordered_backround"
             android:hint="@string/translated_text_will_be_displayed_here"
+            android:textColor="@android:color/black"
             android:enabled="false"
             android:gravity="top"
             android:padding="10dp"
@@ -402,7 +436,4 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"/>
     </LinearLayout>
-
-
-
 </RelativeLayout>

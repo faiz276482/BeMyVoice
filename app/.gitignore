@@ -1,2 +1,3 @@
 /build
 /src/main/res/raw/credentials.json
+/src/main/java/com/nerdytech/bemyvoice/CloudTextToSpeech/Google_API.java
