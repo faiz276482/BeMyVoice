@@ -4,7 +4,7 @@ apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    buildToolsVersion '29.0.3'
 
     packagingOptions {
         exclude 'project.properties'
@@ -81,7 +81,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.3.1'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
-    implementation('com.google.cloud:google-cloud-translate:1.12.0') {
+    implementation('com.google.cloud:google-cloud-translate:1.95.2') {
         exclude group: 'org.apache.httpcomponents'
 //        exclude group: 'com.google.guava'
         exclude group: 'org.json', module: 'json'
@@ -90,13 +90,13 @@ dependencies {
         exclude group: 'com.google.api-client', module: 'google-api-client-appengine'
         exclude group: 'com.google.firebase', module: 'protolite-well-known-types'
     }
-    annotationProcessor 'com.google.cloud:google-cloud-translate:1.12.0'
+    annotationProcessor 'com.google.cloud:google-cloud-translate:1.95.2'
     implementation 'com.google.firebase:firebase-auth:19.4.0'
     implementation 'com.google.firebase:firebase-firestore:21.7.1'
     implementation 'com.google.firebase:firebase-storage:19.2.0'
 //    configurations.implementation.exclude(group: 'com.google.firebase', module: 'protolite-well-known-types')
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation project(path: ':googlecloudtts')

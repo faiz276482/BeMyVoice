@@ -101,7 +101,7 @@ public class MainPresenter implements MainContract.IPresenter, VoiceList.IVoiceL
         mView.invoke(() ->
         {
             mView.setLanguages(mVoiceCollection.getLanguage());
-            mView.makeToast("Google Cloud voice update.", false);
+//            mView.makeToast("Google Cloud voice update.", false);
         });
     }
 
@@ -147,7 +147,7 @@ public class MainPresenter implements MainContract.IPresenter, VoiceList.IVoiceL
 
     @Override
     public void loadGoogleCloudTTS() {
-        mView.invoke(() -> mView.makeToast("Loading google cloud voice list please wait.", true));
+//        mView.invoke(() -> mView.makeToast("Loading google cloud voice list please wait.", true));
         mGoogleCloudTTSAdapter.loadVoiceList();
     }
 

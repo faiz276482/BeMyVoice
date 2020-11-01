@@ -24,6 +24,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -61,8 +62,11 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
     private String originalText;
     private String translatedText;
     private boolean connected;
+    private int pitch;
+    private int speed;
     GoogleCredentials myCredentials;
     RelativeLayout neutral,happy,sad,sick,blessed,shocked,angry,celebrate,trnaslateBtn;
+    TextView neutralTV,happyTV,sadTV,sickTV,blessedTV,shockedTV,angryTV,celebrateTV;
     Spinner lang1,lang2;
     ImageButton exchange;
     FloatingActionButton fabFavourite,fabDelete,fabMic,fabSpeaker;
@@ -70,6 +74,8 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
     Translate translate;
 //    TextToSpeech t1,t2;
     private static final int REQ_CODE_SPEECH_INPUT = 100;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -81,10 +87,18 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
         happy=view.findViewById(R.id.happy);
         sad=view.findViewById(R.id.sad);
         sick=view.findViewById(R.id.sick);
-        blessed=view.findViewById(R.id.blessed);
+//        blessed=view.findViewById(R.id.blessed);
         shocked=view.findViewById(R.id.shocked);
         angry=view.findViewById(R.id.angry);
-        celebrate=view.findViewById(R.id.celebrate);
+//        celebrate=view.findViewById(R.id.celebrate);
+        neutralTV=view.findViewById(R.id.neutral_TV);
+        happyTV=view.findViewById(R.id.happy_TV);
+        sadTV=view.findViewById(R.id.sad_TV);
+        sickTV=view.findViewById(R.id.sick_TV);
+//        blessedTV=view.findViewById(R.id.blessed_TV);
+        shockedTV=view.findViewById(R.id.shocked_TV);
+        angryTV=view.findViewById(R.id.angry_TV);
+//        celebrateTV=view.findViewById(R.id.celebrate_TV);
         lang1=view.findViewById(R.id.lang1);
         lang2=view.findViewById(R.id.lang2);
         exchange=view.findViewById(R.id.exchange);
@@ -99,6 +113,69 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
 
         // init android tts
         initAndroidTTS();
+        loadEmotions();
+
+
+        neutral.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString(getString(R.string.saved_chosen_emotion), "neutral");
+                editor.apply();
+                loadEmotions();
+            }
+        });
+        happy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString(getString(R.string.saved_chosen_emotion), "happy");
+                editor.apply();
+                loadEmotions();
+            }
+        });
+        sad.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString(getString(R.string.saved_chosen_emotion), "sad");
+                editor.apply();
+                loadEmotions();
+            }
+        });
+        sick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString(getString(R.string.saved_chosen_emotion), "sick");
+                editor.apply();
+                loadEmotions();
+            }
+        });
+        angry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString(getString(R.string.saved_chosen_emotion), "angry");
+                editor.apply();
+                loadEmotions();
+            }
+        });
+        shocked.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString(getString(R.string.saved_chosen_emotion), "shocked");
+                editor.apply();
+                loadEmotions();
+            }
+        });
 
         ArrayList<String> langArray = new ArrayList<>(Languages.languages.keySet());
         Collections.sort(langArray);
@@ -182,49 +259,6 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
             }
         });
 
-//        t1=new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
-//            @Override
-//            public void onInit(int status) {
-//                if(status != TextToSpeech.ERROR) {
-//                    t1.setLanguage(Locale.forLanguageTag(Languages.languages.get(lang1.getSelectedItem().toString())));
-//                }
-//            }
-//        });
-//
-//        t2=new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
-//            @Override
-//            public void onInit(int status) {
-//                if(status != TextToSpeech.ERROR) {
-//                    t2.setLanguage(Locale.forLanguageTag(Languages.languages.get(lang2.getSelectedItem().toString())));
-//                }
-//            }
-//        });
-//
-//        fabSpeaker.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String toSpeak = inputToTranslate.getText().toString();
-//                Toast.makeText(getContext(), toSpeak,Toast.LENGTH_SHORT).show();
-//                t1.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
-//            }
-//        });
-
-//        inputToTranslate.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//
-//            }
-//        });
 
         fabDelete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -260,6 +294,67 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
         return view;
     }
 
+    private void loadEmotions() {
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        String defaultValue = getResources().getString(R.string.saved_default_emotion);
+        String chosenEmotion = sharedPref.getString(getString(R.string.saved_chosen_emotion), defaultValue);
+        resetEmotionsBG();
+        switch (chosenEmotion) {
+            case "neutral":
+                neutral.setBackgroundResource(R.drawable.emotion_background);
+                neutralTV.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
+                pitch=(sharedPref.getInt("neutral_pitch",2000));
+                speed=(sharedPref.getInt("neutral_speed",75));
+                break;
+            case "happy":
+                happy.setBackgroundResource(R.drawable.emotion_background);
+                happyTV.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
+                pitch=(sharedPref.getInt("happy_pitch",2000));
+                speed=(sharedPref.getInt("happy_speed",75));
+                break;
+            case "sad":
+                sad.setBackgroundResource(R.drawable.emotion_background);
+                sadTV.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
+                pitch=(sharedPref.getInt("sad_pitch",2000));
+                speed=(sharedPref.getInt("sad_speed",75));
+                break;
+            case "sick":
+                sick.setBackgroundResource(R.drawable.emotion_background);
+                sickTV.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
+                pitch=(sharedPref.getInt("sick_pitch",2000));
+                speed=(sharedPref.getInt("sick_speed",75));
+                break;
+            case "angry":
+                angry.setBackgroundResource(R.drawable.emotion_background);
+                angryTV.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
+                pitch=(sharedPref.getInt("angry_pitch",2000));
+                speed=(sharedPref.getInt("angry_speed",75));
+                break;
+            case "shocked":
+                shocked.setBackgroundResource(R.drawable.emotion_background);
+                shockedTV.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
+                pitch=(sharedPref.getInt("shocked_pitch",2000));
+                speed=(sharedPref.getInt("shocked_speed",75));
+                break;
+        }
+    }
+    private void resetEmotionsBG(){
+        neutral.setBackgroundResource(R.drawable.emotion_background2);
+        neutralTV.setTextColor(ContextCompat.getColor(getContext(),R.color.colorBlack));
+        happy.setBackgroundResource(R.drawable.emotion_background2);
+        happyTV.setTextColor(ContextCompat.getColor(getContext(),R.color.colorBlack));
+        sad.setBackgroundResource(R.drawable.emotion_background2);
+        sadTV.setTextColor(ContextCompat.getColor(getContext(),R.color.colorBlack));
+        sick.setBackgroundResource(R.drawable.emotion_background2);
+        sickTV.setTextColor(ContextCompat.getColor(getContext(),R.color.colorBlack));
+        shocked.setBackgroundResource(R.drawable.emotion_background2);
+        shockedTV.setTextColor(ContextCompat.getColor(getContext(),R.color.colorBlack));
+        angry.setBackgroundResource(R.drawable.emotion_background2);
+        angryTV.setTextColor(ContextCompat.getColor(getContext(),R.color.colorBlack));
+
+
+
+    }
     //Funtions for Language translation
 
     public void getTranslateService() {
@@ -284,7 +379,9 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
         }
     }
 
-    public void tts(){
+    public  void tts(){
+
+        mPresenter.startSpeak("Hello!\nThis is a test.");
 
     }
 
@@ -426,12 +523,16 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
 
     @Override
     public String getSelectedLanguageText() {
-        return "en-GB";
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        String defaultValue = getResources().getString(R.string.saved_voice_lang_default_key);
+        return Languages.voice_lang.get(sharedPref.getString(getString(R.string.saved_voice_lang_key), defaultValue));
     }
 
     @Override
     public String getSelectedStyleText() {
-        return "en-GB-Wavenet-F";
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        String defaultValue2 = getResources().getString(R.string.saved_voice_default_key);
+        return sharedPref.getString(getString(R.string.saved_voice_key), defaultValue2);
     }
 
     @Override
@@ -446,12 +547,12 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
 
     @Override
     public int getProgressPitch() {
-        return 2000;
+        return pitch;
     }
 
     @Override
     public int getProgressSpeakRate() {
-        return 75;
+        return speed;
     }
 
     @Override
