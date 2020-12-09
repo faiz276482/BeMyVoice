@@ -1,17 +1,19 @@
 package com.nerdytech.bemyvoice.ui;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.StrictMode;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,20 +30,28 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.translate.Translate;
+import com.google.api.services.translate.TranslateScopes;
+import com.google.api.services.translate.model.TranslationsResource;
+import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.translate.Translate;
-import com.google.cloud.translate.TranslateOptions;
-import com.google.cloud.translate.Translation;
+
+import com.nerdytech.bemyvoice.CloudTextToSpeech.Google_API;
 import com.nerdytech.bemyvoice.CloudTextToSpeech.MainContract;
 import com.nerdytech.bemyvoice.CloudTextToSpeech.MainPresenter;
 import com.nerdytech.bemyvoice.R;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 import static android.widget.Toast.LENGTH_LONG;
@@ -269,13 +279,79 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
         });
 
         trnaslateBtn.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("StaticFieldLeak")
             @Override
             public void onClick(View v) {
                 if (checkInternetConnection()) {
 
-                    //If there is internet connection, get translate service and start translation:
-                    getTranslateService();
-                    translate();
+
+                    final Handler textViewHandler = new Handler();
+                    if((lang2.getSelectedItem().equals(lang1.getSelectedItem())) || (lang1.getSelectedItem().toString().equals("English") && lang2.getSelectedItem().toString().equals("Select Language")))
+                    {
+                        translatedTv.setText(inputToTranslate.getText());
+                    }
+                    else {
+
+
+                        new AsyncTask<Void, Void, Void>(){
+
+                            @SuppressLint("WrongThread")
+                            @Override
+                            protected Void doInBackground(Void... voids) {
+                                InputStream inputStream = getResources().openRawResource(R.raw.credentials);
+                                GoogleCredentials credentials = null;
+                                try {
+                                    credentials = GoogleCredentials.fromStream(inputStream).createScoped(TranslateScopes.all());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                Log.d("credentials",credentials.toString());
+                                HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
+                                // Create the credential
+                                HttpTransport transport = new NetHttpTransport();
+                                JsonFactory jsonFactory = new JacksonFactory();
+                                Translate translate = new Translate.Builder(transport, jsonFactory, requestInitializer)
+                                        .setApplicationName("beMyVoice")
+                                        .build();
+
+                                originalText=inputToTranslate.getText().toString();
+                                String target="en";
+                                if (!lang2.getSelectedItem().equals(R.string.saved_lang2_default_key)) {
+                                    target = Languages.languages.get(lang2.getSelectedItem().toString());
+                                }
+                                String source=Languages.languages.get(lang1.getSelectedItem().toString());
+                                String finalTarget = target;
+
+
+                                List<String> texts = new LinkedList<>();
+                                texts.add(originalText);
+                                List<TranslationsResource> translationsResourceList =
+                                        null;
+                                try {
+                                    translationsResourceList = translate
+                                            .translations()
+                                            .list(texts, target)
+                                            .setSource(source)
+                                            .setKey(null)
+                                            .set("model", null)
+                                            .setFormat(null)
+                                            .execute()
+                                            .getTranslations();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                Log.d("Translated Text", translationsResourceList.get(0).get("translatedText").toString());
+                                translatedTv.setText(translationsResourceList.get(0).get("translatedText").toString());
+                                translatedText=translationsResourceList.get(0).get("translatedText").toString();
+
+                                return null;
+                            }
+                        }.execute();
+
+
+                    }
+
+
 
                 } else {
 
@@ -355,59 +431,6 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
 
 
     }
-    //Funtions for Language translation
-
-    public void getTranslateService() {
-
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
-        try (InputStream is = getResources().openRawResource(R.raw.credentials)) {
-
-            //Get credentials:
-             myCredentials = GoogleCredentials.fromStream(is);
-
-
-
-            //Set credentials and get translate service:
-            TranslateOptions translateOptions = TranslateOptions.newBuilder().setCredentials(myCredentials).build();
-            translate = translateOptions.getService();
-
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-
-        }
-    }
-
-    public  void tts(){
-
-        mPresenter.startSpeak("Hello!\nThis is a test.");
-
-    }
-
-    public void translate() {
-
-        //Get input text to be translated:
-
-        if((lang2.getSelectedItem().equals(lang1.getSelectedItem())) || (lang1.getSelectedItem().toString().equals("English") && lang2.getSelectedItem().toString().equals("Select Language")))
-        {
-            translatedTv.setText(inputToTranslate.getText());
-        }
-        else {
-
-            originalText = inputToTranslate.getText().toString();
-            Translate.TranslateOption toBeTranslatedLanguage = Translate.TranslateOption.targetLanguage("en");
-            if (!lang2.getSelectedItem().equals(R.string.saved_lang2_default_key)) {
-                toBeTranslatedLanguage = Translate.TranslateOption.targetLanguage(Languages.languages.get(lang2.getSelectedItem().toString()));
-            }
-            Translation translation = translate.translate(originalText, Translate.TranslateOption.sourceLanguage(Languages.languages.get(lang1.getSelectedItem().toString())), toBeTranslatedLanguage, Translate.TranslateOption.model("base"));
-            translatedText = translation.getTranslatedText();
-
-            //Translated text and original text are set to TextViews:
-            translatedTv.setText(translatedText);
-        }
-
-    }
 
     public boolean checkInternetConnection() {
 
@@ -420,14 +443,12 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
 
         return connected;
     }
-//    public void onPause(){
-//        if(t1 !=null){
-//            t1.stop();
-////            t1.shutdown();
-//        }
-//        super.onPause();
-//    }
 
+    public  void tts(){
+
+        mPresenter.startSpeak("Hello!\nThis is a test.");
+
+    }
     //Functions for Speech To Text conversion
 
     private void startVoiceInput() {

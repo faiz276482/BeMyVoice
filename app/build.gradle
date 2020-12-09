@@ -8,33 +8,15 @@ android {
 
     packagingOptions {
         exclude 'project.properties'
-//        exclude 'META-INF/DEPENDENCIES'
-//        exclude 'META-INF/DEPENDENCIES'
-//        exclude 'META-INF/LICENSE'
-//        exclude 'META-INF/LICENSE.txt'
-//        exclude 'META-INF/license.txt'
-//        exclude 'META-INF/NOTICE'
-//        exclude 'META-INF/NOTICE.txt'
-//        exclude 'META-INF/notice.txt'
-//        exclude 'META-INF/ASL2.0'
-
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
         exclude 'META-INF/INDEX.LIST'
-//        exclude 'google/protobuf/field_mask.proto'
-//        exclude 'google/protobuf/type.proto'
-//        exclude 'google/protobuf/api.proto'
-//        exclude 'google/protobuf/empty.proto'
-//        exclude 'google/protobuf/source_context.proto'
-//        exclude 'google/protobuf/wrappers.proto'
-//        exclude 'google/protobuf/struct.proto'
-//        exclude 'google/protobuf/any.proto'
-//        exclude 'google/protobuf/timestamp.proto'
-//        exclude 'google/protobuf/AbstractMessageLite'
-//        exclude 'google/protobuf/WireFormat'
-//        exclude 'google/protobuf/WrappersProto'
-//        exclude 'google/protobuf/Writer'
-//
-//        exclude 'google/api/Advice'
-//        exclude 'google/api/AdviceOrBuilder'
     }
 
     defaultConfig {
@@ -61,11 +43,7 @@ android {
     productFlavors {
     }
     configurations {
-        implementation.exclude module:'proto-google-common-protos'
-        implementation.exclude module:'protolite-well-known-types'
-//        implementation.exclude module:'guava'
-        implementation.exclude module:'protobuf-lite'
-        implementation.exclude module:'protobuf-javalite'
+
     }
 
 }
@@ -73,39 +51,33 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
-    implementation 'com.google.android.gms:play-services-auth:18.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.material:material:1.2.1'
-    implementation 'androidx.navigation:navigation-fragment:2.3.1'
-    implementation 'androidx.navigation:navigation-ui:2.3.1'
+    implementation 'androidx.navigation:navigation-fragment:2.3.2'
+    implementation 'androidx.navigation:navigation-ui:2.3.2'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
-    implementation('com.google.cloud:google-cloud-translate:1.95.2') {
-        exclude group: 'org.apache.httpcomponents'
-//        exclude group: 'com.google.guava'
-        exclude group: 'org.json', module: 'json'
-        exclude group: 'io.grpc', module: 'grpc-all'
-        exclude group: 'com.google.protobuf', module: 'protobuf-java'
-        exclude group: 'com.google.api-client', module: 'google-api-client-appengine'
-        exclude group: 'com.google.firebase', module: 'protolite-well-known-types'
-    }
-    annotationProcessor 'com.google.cloud:google-cloud-translate:1.95.2'
-    implementation 'com.google.firebase:firebase-auth:19.4.0'
-    implementation 'com.google.firebase:firebase-firestore:21.7.1'
+
+    implementation 'com.google.firebase:firebase-auth:20.0.1'
+    implementation 'com.google.firebase:firebase-firestore:22.0.0'
     implementation 'com.google.firebase:firebase-storage:19.2.0'
-//    configurations.implementation.exclude(group: 'com.google.firebase', module: 'protolite-well-known-types')
+
+
 
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation project(path: ':googlecloudtts')
 
+    implementation 'com.google.apis:google-api-services-translate:v2-rev20170525-1.30.10'
+    implementation 'com.google.auth:google-auth-library-oauth2-http:0.22.0'
 
-//    // Google Text-to-Speech API
-//    implementation 'com.google.cloud:google-cloud-texttospeech:0.87.0-beta'
-//    // Jsoup HTML parser library @ https://jsoup.org/
-//    implementation 'org.jsoup:jsoup:1.11.3'
-//    // GRPC OK-HTTP for TTS_Client() request on Android
-//    implementation 'io.grpc:grpc-okhttp:1.28.0'
+    //circular imageview
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
+    //SquarePicasso
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
 }
