@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
@@ -40,11 +42,14 @@ import com.google.api.services.translate.TranslateScopes;
 import com.google.api.services.translate.model.TranslationsResource;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
-
-import com.nerdytech.bemyvoice.CloudTextToSpeech.Google_API;
+import com.google.common.util.concurrent.Striped;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.nerdytech.bemyvoice.CloudTextToSpeech.MainContract;
 import com.nerdytech.bemyvoice.CloudTextToSpeech.MainPresenter;
 import com.nerdytech.bemyvoice.R;
+import com.nerdytech.bemyvoice.model.Favourites;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -367,6 +372,41 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
                 startVoiceInput();
             }
         });
+
+
+        fabFavourite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseFirestore.getInstance().collection("Favourites").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(!TextUtils.isEmpty(inputToTranslate.getText())) {
+                            List<String> list = (List<String>) documentSnapshot.get("text");
+                            Log.i("list", list.toString());
+                            if(!list.contains(inputToTranslate.getText().toString())) {
+                                list.add(inputToTranslate.getText().toString().toLowerCase());
+
+                                FirebaseFirestore.getInstance().collection("Favourites").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                        .set(new Favourites(list)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(getContext(), "\""+inputToTranslate.getText().toString()+"\" added successfully", LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                            else{
+                                Toast.makeText(getContext(), inputToTranslate.getText().toString()+" already exists in Favourites!", LENGTH_SHORT).show();
+                            }
+                        }
+                        else{
+                            Toast.makeText(getContext(), "Empty text cannot be added in Favourite\nPlease enter some text!", LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+
         return view;
     }
 
@@ -444,11 +484,7 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
         return connected;
     }
 
-    public  void tts(){
 
-        mPresenter.startSpeak("Hello!\nThis is a test.");
-
-    }
     //Functions for Speech To Text conversion
 
     private void startVoiceInput() {

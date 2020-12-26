@@ -1,17 +1,11 @@
 package com.nerdytech.bemyvoice.ui;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
 import android.os.Handler;
 import android.os.Looper;
-import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,16 +21,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
 import com.nerdytech.bemyvoice.CloudTextToSpeech.MainContract;
 import com.nerdytech.bemyvoice.CloudTextToSpeech.MainPresenter;
 import com.nerdytech.bemyvoice.R;
 
-import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static android.app.Activity.RESULT_OK;
 import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.LENGTH_SHORT;
 
@@ -55,6 +50,7 @@ public class SettingsFragment extends Fragment implements MainContract.IView {
     private String translatedText;
     private boolean connected;
 
+    CloudTTS cloudTTS;
     RelativeLayout neutral,happy,sad,sick,blessed,shocked,angry,celebrate;
     TextView neutralTV,happyTV,sadTV,sickTV,blessedTV,shockedTV,angryTV,celebrateTV,pitchTV,speedTV;
     SeekBar pitch,speed;
@@ -103,6 +99,7 @@ public class SettingsFragment extends Fragment implements MainContract.IView {
         pitch.setProgress(2000);
         speed.setMax(375);
         speed.setProgress(75);
+        cloudTTS=new CloudTTS(view,view.getContext(),getActivity(),"Hello\nThis is a test!");
         loadEmotions();
 
         mPresenter = new MainPresenter(this);

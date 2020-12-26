@@ -11,8 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
-
 import com.nerdytech.bemyvoice.CloudTextToSpeech.MainContract;
 import com.nerdytech.bemyvoice.CloudTextToSpeech.MainPresenter;
 import com.nerdytech.bemyvoice.R;
@@ -201,9 +199,15 @@ public class CloudTTS implements MainContract.IView{
     }
 
     private void initAndroidTTS() {
-        Intent checkIntent = new Intent();
-        checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-        activity.startActivityForResult(checkIntent, TEXT_TO_SPEECH_CODE);
+        try {
+            Intent checkIntent = new Intent();
+            checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+            activity.startActivityForResult(checkIntent, TEXT_TO_SPEECH_CODE);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
 }

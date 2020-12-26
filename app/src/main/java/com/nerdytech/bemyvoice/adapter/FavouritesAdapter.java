@@ -41,7 +41,12 @@ public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.Vi
         this.listdata = listdata;
         this.mActivity=mActivity;
         this.view=view;
-        cloudTTS=new CloudTTS(view,mContext,mActivity,"");
+        try {
+            cloudTTS = new CloudTTS(view, mContext, mActivity, "");
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @NonNull
