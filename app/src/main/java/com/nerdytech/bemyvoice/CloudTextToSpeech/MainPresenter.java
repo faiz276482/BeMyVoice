@@ -119,10 +119,10 @@ public class MainPresenter implements MainContract.IPresenter, VoiceList.IVoiceL
 
     public void startSpeak(String text) {
         mSpeechManager.stopSpeak();
-        if (mVoiceCollection == null || mVoiceCollection.size() == 0) {
-            mView.makeToast("Loading Voice Error, please check network or API_KEY.", true);
-            return;
-        }
+//        if (mVoiceCollection == null || mVoiceCollection.size() == 0) {
+//            mView.makeToast("Loading Voice Error, please check network or API_KEY.", true);
+//            return;
+//        }
 
         initGoogleCloudTTSVoice();
         mSpeechManager.startSpeak(text);

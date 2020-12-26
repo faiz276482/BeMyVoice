@@ -72,4 +72,6 @@
     <string name="saved_shocked_speed">75</string>
     <string name="saved_shocked_pitch">2000</string>
     <string name="logout">Logout</string>
+    <string name="sample">Sample</string>
+    <string name="no_favourites">No Favourites</string>
 </resources>

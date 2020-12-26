@@ -36,6 +36,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nerdytech.bemyvoice.MainActivity;
 import com.nerdytech.bemyvoice.R;
+import com.nerdytech.bemyvoice.model.Favourites;
 import com.nerdytech.bemyvoice.model.User;
 
 import java.util.regex.Matcher;
@@ -181,6 +182,13 @@ public class SignUpActivity extends AppCompatActivity {
                                 public void onSuccess(Void aVoid) {
                                     mUser.sendEmailVerification();
                                     System.out.println("email:"+mUser.getEmail());
+                                    Favourites favourites=new Favourites();
+                                    FirebaseFirestore.getInstance().collection("Favourites").document(mUser.getUid()).set(favourites).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("Favourites added","Succesfully");
+                                        }
+                                    });
                                     Toast.makeText(SignUpActivity.this, "Account Created Successfully!", Toast.LENGTH_SHORT).show();
                                     mAuth.signOut();
                                     Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);

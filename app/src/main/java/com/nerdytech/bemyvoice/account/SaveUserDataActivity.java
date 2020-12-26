@@ -7,6 +7,7 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -20,6 +21,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nerdytech.bemyvoice.MainActivity;
 import com.nerdytech.bemyvoice.R;
+import com.nerdytech.bemyvoice.model.Favourites;
 import com.nerdytech.bemyvoice.model.User;
 
 import java.text.SimpleDateFormat;
@@ -113,6 +115,13 @@ public class SaveUserDataActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Toast.makeText(SaveUserDataActivity.this, "Account Created", Toast.LENGTH_SHORT).show();
+                            Favourites favourites=new Favourites();
+                            FirebaseFirestore.getInstance().collection("Favourites").document(mUser.getUid()).set(favourites).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d("Favourites added","Succesfully");
+                                }
+                            });
                             startActivity(new Intent(SaveUserDataActivity.this, MainActivity.class)
                                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             finish();
@@ -123,6 +132,7 @@ public class SaveUserDataActivity extends AppCompatActivity {
                             Toast.makeText(SaveUserDataActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                         }
                     });
+
                 }
 
             }
