@@ -1,10 +1,14 @@
 package com.nerdytech.bemyvoice.CloudTextToSpeech;
 
 import android.util.Log;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.FirebaseDatabase;
 import com.nerdytech.bemyvoice.model.AndroidTTSAdapter;
 import com.nerdytech.bemyvoice.model.GoogleCloudTTSAdapter;
 import com.nerdytech.bemyvoice.model.SpeechManager;
+import com.nerdytech.bemyvoice.model.Wallet;
 import com.nerdytech.bemyvoice.model.android.AndroidVoice;
 
 import java.util.Locale;
@@ -15,6 +19,8 @@ import darren.googlecloudtts.GoogleCloudAPIConfig;
 import darren.googlecloudtts.GoogleCloudVoice;
 import darren.googlecloudtts.VoiceCollection;
 import darren.googlecloudtts.VoiceList;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 /**
  * Author: Changemyminds.

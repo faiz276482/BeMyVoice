@@ -1,8 +1,5 @@
 package com.nerdytech.bemyvoice.account;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +13,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -32,12 +32,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.database.FirebaseDatabase;
 import com.nerdytech.bemyvoice.MainActivity;
 import com.nerdytech.bemyvoice.R;
-import com.nerdytech.bemyvoice.model.Favourites;
 import com.nerdytech.bemyvoice.model.User;
+import com.nerdytech.bemyvoice.model.Wallet;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -176,20 +175,24 @@ public class SignUpActivity extends AppCompatActivity {
                             progressDialog.dismiss();
                             mUser=mAuth.getCurrentUser();
                             User user=new User(uName,uEmail,mUser.getUid(),"","dd/mm/yy","default");
-                            DocumentReference docRef= FirebaseFirestore.getInstance().collection("Users").document(mUser.getUid());
-                            docRef.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            FirebaseDatabase.getInstance().getReference().child("User").child(mUser.getUid())
+                                    .setValue(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     mUser.sendEmailVerification();
                                     System.out.println("email:"+mUser.getEmail());
-                                    Favourites favourites=new Favourites();
-                                    FirebaseFirestore.getInstance().collection("Favourites").document(mUser.getUid()).set(favourites).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    Toast.makeText(SignUpActivity.this, "Account Created Successfully!", Toast.LENGTH_SHORT).show();
+                                    FirebaseDatabase.getInstance().getReference().child("Wallet").child(mUser.getUid()).setValue(new Wallet(500)).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            Log.d("Favourites added","Succesfully");
+                                            Log.i("wallet","created!");
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.i("wallet","not created");
                                         }
                                     });
-                                    Toast.makeText(SignUpActivity.this, "Account Created Successfully!", Toast.LENGTH_SHORT).show();
                                     mAuth.signOut();
                                     Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);

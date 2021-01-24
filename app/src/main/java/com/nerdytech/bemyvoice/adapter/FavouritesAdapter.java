@@ -13,17 +13,22 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nerdytech.bemyvoice.R;
 import com.nerdytech.bemyvoice.model.Favourites;
+import com.nerdytech.bemyvoice.model.Wallet;
 import com.nerdytech.bemyvoice.ui.CloudTTS;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 
 public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.ViewHolder> {
@@ -33,14 +38,16 @@ public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.Vi
     Activity mActivity;
     List<String> listdata;
     CloudTTS cloudTTS;
+    int coins;
 
     FirebaseUser fUser;
 
-    public FavouritesAdapter(Context mContext, Activity mActivity, View view,List<String> listdata) {
+    public FavouritesAdapter(Context mContext, Activity mActivity, View view,List<String> listdata,int coins) {
         this.mContext = mContext;
         this.listdata = listdata;
         this.mActivity=mActivity;
         this.view=view;
+        this.coins=coins;
         try {
             cloudTTS = new CloudTTS(view, mContext, mActivity, "");
         }
@@ -65,8 +72,21 @@ public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.Vi
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cloudTTS.setText(listdata.get(position));
-                cloudTTS.play();
+                if(coins!=0) {
+                    cloudTTS.setText(listdata.get(position));
+                    cloudTTS.play();
+                    coins -= 2;
+                    FirebaseDatabase.getInstance().getReference().child("Wallet").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .setValue(new Wallet(coins)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(mContext, "-2 coins for textToSpeech conversion!", LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                else {
+                    Toast.makeText(mContext, "Coins exhausted!\nTo avail this service please Add coins by clicking on the coins button!", LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -75,7 +95,9 @@ public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.Vi
             public void onClick(View v) {
                 listdata.remove(position);
                 Favourites fav=new Favourites(listdata);
-                FirebaseFirestore.getInstance().collection("Favourites").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).set(fav);
+                FirebaseDatabase.getInstance().getReference().child("Favourites").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        .setValue(fav);
+//                FirebaseFirestore.getInstance().collection("Favourites").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).set(fav);
             }
         });
 

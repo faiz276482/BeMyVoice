@@ -2,11 +2,6 @@ package com.nerdytech.bemyvoice.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,16 +10,18 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.nerdytech.bemyvoice.R;
 import com.nerdytech.bemyvoice.account.LoginActivity;
 import com.nerdytech.bemyvoice.model.User;
@@ -66,33 +63,33 @@ public class ProfileFragment extends Fragment {
         try{
             if(mUser!=null) {//Checking if user is actually present
 
-                DocumentReference docRef= FirebaseFirestore.getInstance().collection("Users").document(mUser.getUid());
-                docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                        if(error!=null)
-                        {
-                            return;
-                        }
-                        if (value.exists())
-                        {
-                            User user=value.toObject(User.class);
-                            name.setText(user.getName());
-                            email.setText(user.getEmail());
-                            mobile.setText(user.getMobile());
-                            dob.setText(user.getDob());
+                FirebaseDatabase.getInstance().getReference().child("User").child(mUser.getUid())
+                        .addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot value) {
+                                if (value.exists())
+                                {
+                                    User user=value.getValue(User.class);
+                                    name.setText(user.getName());
+                                    email.setText(user.getEmail());
+                                    mobile.setText(user.getMobile());
+                                    dob.setText(user.getDob());
 
-                            if(user.getProfile_pic().equals("default")){
-                                profile_image.setImageResource(R.mipmap.ic_launcher_round);
+                                    if(user.getProfile_pic().equals("default")){
+                                        profile_image.setImageResource(R.mipmap.ic_launcher_round);
+                                    }
+                                    else{
+                                        Picasso.get().load(user.getProfile_pic()).into(profile_image);
+                                    }
+
+                                }
                             }
-                            else{
-                                Picasso.get().load(user.getProfile_pic()).into(profile_image);
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
                             }
-
-                        }
-                    }
-                });
-
+                        });
             }
         }
         catch (Exception e)

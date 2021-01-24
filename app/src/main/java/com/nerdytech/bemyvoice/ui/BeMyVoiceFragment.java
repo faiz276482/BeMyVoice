@@ -22,11 +22,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -42,14 +44,16 @@ import com.google.api.services.translate.TranslateScopes;
 import com.google.api.services.translate.model.TranslationsResource;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.common.util.concurrent.Striped;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.nerdytech.bemyvoice.CloudTextToSpeech.MainContract;
 import com.nerdytech.bemyvoice.CloudTextToSpeech.MainPresenter;
 import com.nerdytech.bemyvoice.R;
 import com.nerdytech.bemyvoice.model.Favourites;
+import com.nerdytech.bemyvoice.model.Wallet;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -79,6 +83,8 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
     private boolean connected;
     private int pitch;
     private int speed;
+    LinearLayout coins;
+    TextView coinTV;
     GoogleCredentials myCredentials;
     RelativeLayout neutral,happy,sad,sick,blessed,shocked,angry,celebrate,trnaslateBtn;
     TextView neutralTV,happyTV,sadTV,sickTV,blessedTV,shockedTV,angryTV,celebrateTV;
@@ -89,6 +95,7 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
     Translate translate;
 //    TextToSpeech t1,t2;
     private static final int REQ_CODE_SPEECH_INPUT = 100;
+    FirebaseAuth mAuth;
 
 
     @Override
@@ -96,6 +103,7 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view=inflater.inflate(R.layout.fragment_be_my_voice, container, false);
+        mAuth=FirebaseAuth.getInstance();
         inputToTranslate=view.findViewById(R.id.edittext);
         translatedTv=view.findViewById(R.id.edittext2);
         neutral=view.findViewById(R.id.neutral);
@@ -122,6 +130,8 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
         fabMic=view.findViewById(R.id.fab_mic);
         fabSpeaker=view.findViewById(R.id.fab_speaker);
         trnaslateBtn=view.findViewById(R.id.translate_btn);
+        coins=view.findViewById(R.id.coins);
+        coinTV=view.findViewById(R.id.coins_tv);
 
         mPresenter = new MainPresenter(this);
         mPresenter.onCreate();
@@ -129,6 +139,19 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
         // init android tts
         initAndroidTTS();
         loadEmotions();
+
+        FirebaseDatabase.getInstance().getReference().child("Wallet").child(mAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Wallet wallet=snapshot.getValue(Wallet.class);
+                coinTV.setText(String.valueOf(wallet.getCoins()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
 
         neutral.setOnClickListener(new View.OnClickListener() {
@@ -271,6 +294,24 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
             @Override
             public void onClick(View v) {
                 mPresenter.startSpeak(inputToTranslate.getText().toString());
+                if(!TextUtils.isEmpty(inputToTranslate.getText()))
+                {
+                    int coinsValue=Integer.parseInt(String.valueOf(coinTV.getText()));
+                    if(coinsValue>1) {
+                        coinsValue -= 2;
+                        FirebaseDatabase.getInstance().getReference().child("Wallet").child(mAuth.getCurrentUser().getUid())
+                                .setValue(new Wallet(coinsValue)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(getContext(), "-2 coins for textToSpeech conversion!", LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                    else {
+                    Toast.makeText(getContext(), "Coins exhausted!\nTo avail this service please Add coins by clicking on the coins button!", LENGTH_SHORT).show();
+                    }
+                }
+
             }
         });
 
@@ -296,70 +337,80 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
                         translatedTv.setText(inputToTranslate.getText());
                     }
                     else {
+                        int coinsValue = Integer.parseInt(String.valueOf(coinTV.getText()));
+                        if(coinsValue>0) {
+
+                            new AsyncTask<Void, Void, Void>() {
+
+                                @SuppressLint("WrongThread")
+                                @Override
+                                protected Void doInBackground(Void... voids) {
+                                    InputStream inputStream = getResources().openRawResource(R.raw.credentials);
+                                    GoogleCredentials credentials = null;
+                                    try {
+                                        credentials = GoogleCredentials.fromStream(inputStream).createScoped(TranslateScopes.all());
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                    Log.d("credentials", credentials.toString());
+                                    HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
+                                    // Create the credential
+                                    HttpTransport transport = new NetHttpTransport();
+                                    JsonFactory jsonFactory = new JacksonFactory();
+                                    Translate translate = new Translate.Builder(transport, jsonFactory, requestInitializer)
+                                            .setApplicationName("beMyVoice")
+                                            .build();
+
+                                    originalText = inputToTranslate.getText().toString();
+                                    String target = "en";
+                                    if (!lang2.getSelectedItem().equals(R.string.saved_lang2_default_key)) {
+                                        target = Languages.languages.get(lang2.getSelectedItem().toString());
+                                    }
+                                    String source = Languages.languages.get(lang1.getSelectedItem().toString());
+                                    String finalTarget = target;
 
 
-                        new AsyncTask<Void, Void, Void>(){
+                                    List<String> texts = new LinkedList<>();
+                                    texts.add(originalText);
+                                    List<TranslationsResource> translationsResourceList =
+                                            null;
+                                    try {
+                                        translationsResourceList = translate
+                                                .translations()
+                                                .list(texts, target)
+                                                .setSource(source)
+                                                .setKey(null)
+                                                .set("model", null)
+                                                .setFormat(null)
+                                                .execute()
+                                                .getTranslations();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                    Log.d("Translated Text", translationsResourceList.get(0).get("translatedText").toString());
+                                    setTranlatedTV(translationsResourceList.get(0).get("translatedText").toString());
+                                    if (!TextUtils.isEmpty(inputToTranslate.getText())) {
+                                        int coinsValue2 = Integer.parseInt(String.valueOf(coinTV.getText()));
+                                        coinsValue2 -= 1;
+                                        FirebaseDatabase.getInstance().getReference().child("Wallet").child(mAuth.getCurrentUser().getUid())
+                                                .setValue(new Wallet(coinsValue2)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Toast.makeText(getContext(), "-1 coin for textTranslation!", LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
 
-                            @SuppressLint("WrongThread")
-                            @Override
-                            protected Void doInBackground(Void... voids) {
-                                InputStream inputStream = getResources().openRawResource(R.raw.credentials);
-                                GoogleCredentials credentials = null;
-                                try {
-                                    credentials = GoogleCredentials.fromStream(inputStream).createScoped(TranslateScopes.all());
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+                                    return null;
                                 }
-                                Log.d("credentials",credentials.toString());
-                                HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
-                                // Create the credential
-                                HttpTransport transport = new NetHttpTransport();
-                                JsonFactory jsonFactory = new JacksonFactory();
-                                Translate translate = new Translate.Builder(transport, jsonFactory, requestInitializer)
-                                        .setApplicationName("beMyVoice")
-                                        .build();
+                            }.execute();
+                        }
+                        else {
+                            Toast.makeText(getContext(), "Coins exhausted!\nTo avail this service please Add coins by clicking on the coins button!", LENGTH_SHORT).show();
 
-                                originalText=inputToTranslate.getText().toString();
-                                String target="en";
-                                if (!lang2.getSelectedItem().equals(R.string.saved_lang2_default_key)) {
-                                    target = Languages.languages.get(lang2.getSelectedItem().toString());
-                                }
-                                String source=Languages.languages.get(lang1.getSelectedItem().toString());
-                                String finalTarget = target;
-
-
-                                List<String> texts = new LinkedList<>();
-                                texts.add(originalText);
-                                List<TranslationsResource> translationsResourceList =
-                                        null;
-                                try {
-                                    translationsResourceList = translate
-                                            .translations()
-                                            .list(texts, target)
-                                            .setSource(source)
-                                            .setKey(null)
-                                            .set("model", null)
-                                            .setFormat(null)
-                                            .execute()
-                                            .getTranslations();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                Log.d("Translated Text", translationsResourceList.get(0).get("translatedText").toString());
-                                translatedTv.setText(translationsResourceList.get(0).get("translatedText").toString());
-                                translatedText=translationsResourceList.get(0).get("translatedText").toString();
-
-                                return null;
-                            }
-                        }.execute();
-
-
+                        }
                     }
-
-
-
                 } else {
-
                     //If not, display "no connection" warning:
                     translatedTv.setText(getResources().getString(R.string.no_connection));
                 }
@@ -373,42 +424,76 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
             }
         });
 
-
         fabFavourite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseFirestore.getInstance().collection("Favourites").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(!TextUtils.isEmpty(inputToTranslate.getText())) {
-                            List<String> list = (List<String>) documentSnapshot.get("text");
-                            Log.i("list", list.toString());
-                            if(!list.contains(inputToTranslate.getText().toString())) {
-                                list.add(inputToTranslate.getText().toString().toLowerCase());
+                int coinsValue = Integer.parseInt(coinTV.getText().toString());
+                if (coinsValue > 1) {
+                    FirebaseDatabase.getInstance().getReference().child("Favourites").child(mAuth.getCurrentUser().getUid())
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (!TextUtils.isEmpty(inputToTranslate.getText())) {
+                                        List<String> list;
+                                        if(snapshot.exists()) {
+                                            Favourites favourites = snapshot.getValue(Favourites.class);
+                                            list = (List<String>) favourites.getText();
+                                        }
+                                        else {
+                                            list=new ArrayList<String>();
+                                        }
+                                        Log.i("list", list.toString());
+                                        if (!list.contains(inputToTranslate.getText().toString())) {
+                                            list.add(inputToTranslate.getText().toString().toLowerCase());
 
-                                FirebaseFirestore.getInstance().collection("Favourites").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                        .set(new Favourites(list)).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(getContext(), "\""+inputToTranslate.getText().toString()+"\" added successfully", LENGTH_SHORT).show();
+
+                                            FirebaseDatabase.getInstance().getReference().child("Favourites").child(mAuth.getCurrentUser().getUid())
+                                                    .setValue(new Favourites(list)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Toast.makeText(getContext(), "\"" + inputToTranslate.getText().toString() + "\" added successfully", LENGTH_SHORT).show();
+                                                    int coinsValue2=Integer.parseInt(coinTV.getText().toString());
+                                                    coinsValue2 -= 2;
+                                                    FirebaseDatabase.getInstance().getReference().child("Wallet").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                                            .setValue(new Wallet(coinsValue2)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            Toast.makeText(getContext(), "-2 coins for adding to favourites!", LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                        else {
+                                            Toast.makeText(getContext(), inputToTranslate.getText().toString() + " already exists in Favourites!", LENGTH_SHORT).show();
+                                        }
                                     }
-                                });
-                            }
-                            else{
-                                Toast.makeText(getContext(), inputToTranslate.getText().toString()+" already exists in Favourites!", LENGTH_SHORT).show();
-                            }
-                        }
-                        else{
-                            Toast.makeText(getContext(), "Empty text cannot be added in Favourite\nPlease enter some text!", LENGTH_SHORT).show();
-                        }
-                    }
-                });
+                                    else {
+                                        Toast.makeText(getContext(), "Empty text cannot be added in Favourite\nPlease enter some text!", LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+
+                }
+                else {
+                    Toast.makeText(getContext(), "Coins exhausted!\nTo avail this service please Add coins by clicking on the coins button!", LENGTH_SHORT).show();
+                }
             }
         });
 
         return view;
     }
+
+    private void setTranlatedTV(String translatedText) {
+        translatedTv.setText(translatedText);
+        this.translatedText=translatedText;
+    }
+
 
     private void loadEmotions() {
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
@@ -467,9 +552,6 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
         shockedTV.setTextColor(ContextCompat.getColor(getContext(),R.color.colorBlack));
         angry.setBackgroundResource(R.drawable.emotion_background2);
         angryTV.setTextColor(ContextCompat.getColor(getContext(),R.color.colorBlack));
-
-
-
     }
 
     public boolean checkInternetConnection() {

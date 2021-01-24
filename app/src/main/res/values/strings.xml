@@ -74,4 +74,7 @@
     <string name="logout">Logout</string>
     <string name="sample">Sample</string>
     <string name="no_favourites">No Favourites</string>
+    <string name="search_word">Search word</string>
+    <string name="search">Search</string>
+    <string name="add_word">Add Word</string>
 </resources>
