@@ -4,13 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WordActivity">
+    tools:context=".VideosOfWordActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_videos_availbale_for_the_word"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:visibility="invisible"
+        android:id="@+id/no_video_available_tv"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:background="@drawable/bordered_backround"
-        android:padding="10dp"
-        android:id="@+id/word_rv"/>
+        android:id="@+id/video_by_user_rv"/>
 
 </RelativeLayout>

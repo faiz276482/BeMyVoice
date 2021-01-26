@@ -12,8 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseUser;
+import com.nerdytech.bemyvoice.MainActivity;
 import com.nerdytech.bemyvoice.R;
 import com.nerdytech.bemyvoice.WordStartingWithInitialActivity;
+import com.nerdytech.bemyvoice.ui.VideoDictionaryFragment;
 
 import java.util.List;
 
@@ -50,7 +52,9 @@ public class WordsStartingWithAdapter extends RecyclerView.Adapter<WordsStarting
             @Override
             public void onClick(View v) {
                 mContext.startActivity(new Intent(mContext, WordStartingWithInitialActivity.class).putExtra("saved_sign_language",selectedLanguage)
-                        .putExtra("initials",holder.initiatlsTextView.getText().toString()));
+                        .putExtra("initials",holder.initiatlsTextView.getText().toString())
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                ((MainActivity)mContext).finish();
             }
         });
 

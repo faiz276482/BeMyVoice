@@ -7,6 +7,7 @@ public class Video {
     int upvotes;
     int downvotes;
 
+    public  Video(){}
     public Video(String video, String author, String upload_date, int upvotes, int downvotes) {
         this.video = video;
         this.author = author;

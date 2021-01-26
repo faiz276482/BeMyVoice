@@ -2,6 +2,7 @@ package com.nerdytech.bemyvoice;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -54,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent intent=getIntent();
+        int from=intent.getIntExtra("from",0);
 
         mAuth= FirebaseAuth.getInstance();
         mUser=mAuth.getCurrentUser();
@@ -166,7 +170,14 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new BeMyVoiceFragment()).commit();
+        if(from==0) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new BeMyVoiceFragment()).commit();
+        }
+        else if(from==1)
+        {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new VideoDictionaryFragment()).commit();
+            bottomNavigationView.getMenu().findItem(R.id.video_dictionary).setChecked(true);
+        }
 
     }
 

@@ -28,6 +28,8 @@ public class WordStartingWithInitialActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     WordsStartingWithInitialsAdapter adapter;
+    String initials;
+    String saved_sign_language;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,8 +39,8 @@ public class WordStartingWithInitialActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
 
         Intent intent=getIntent();
-        String initials=intent.getStringExtra("initials");
-        String saved_sign_language = intent.getStringExtra("saved_sign_language");
+        initials=intent.getStringExtra("initials");
+        saved_sign_language = intent.getStringExtra("saved_sign_language");
         System.out.println("saved sign language="+saved_sign_language);
         System.out.println("In WordStartingWithIntialActivity\n"+saved_sign_language+"\n"+initials);
 
@@ -52,10 +54,9 @@ public class WordStartingWithInitialActivity extends AppCompatActivity {
                     List<Word> wordData=new ArrayList<>();
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         words.add(document.getId());
-                        Map<String, Object> map = document.getData();
                         wordData.add(document.toObject(Word.class));
                     }
-                    adapter = new WordsStartingWithInitialsAdapter(getBaseContext(),words,wordData);
+                    adapter = new WordsStartingWithInitialsAdapter(getBaseContext(),words,wordData,initials,saved_sign_language);
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
                     Log.d("fetched words", words.toString());
@@ -64,5 +65,13 @@ public class WordStartingWithInitialActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(WordStartingWithInitialActivity.this,MainActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra("from",1));
+        finish();
+        super.onBackPressed();
     }
 }
