@@ -2,8 +2,8 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/initials_rv"
-    android:background="@drawable/bordered_backround">
+    android:background="@drawable/bordered_backround"
+    android:id="@+id/word_rl">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -11,7 +11,7 @@
         android:text="@string/sample"
         android:padding="10dp"
         android:layout_marginEnd="40dp"
-        android:id="@+id/initials_TextView"
+        android:id="@+id/word_TextView"
         android:textColor="@android:color/black"
         />
     <ImageView
@@ -21,7 +21,6 @@
         android:scaleType="fitXY"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:id="@+id/delete"
+        android:id="@+id/arrow"
         android:layout_marginEnd="10dp"/>
-
 </RelativeLayout>

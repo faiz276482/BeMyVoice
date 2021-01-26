@@ -133,6 +133,11 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
         coins=view.findViewById(R.id.coins);
         coinTV=view.findViewById(R.id.coins_tv);
 
+        SharedPreferences sharedPreferences=getActivity().getPreferences(Context.MODE_PRIVATE);
+        coinTV.setText(String.valueOf(sharedPreferences.getInt("coins",0)));
+
+
+
         mPresenter = new MainPresenter(this);
         mPresenter.onCreate();
 
@@ -299,6 +304,10 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
                     int coinsValue=Integer.parseInt(String.valueOf(coinTV.getText()));
                     if(coinsValue>1) {
                         coinsValue -= 2;
+                        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putInt("coins",coinsValue);
+                        editor.apply();
                         FirebaseDatabase.getInstance().getReference().child("Wallet").child(mAuth.getCurrentUser().getUid())
                                 .setValue(new Wallet(coinsValue)).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -392,6 +401,10 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
                                     if (!TextUtils.isEmpty(inputToTranslate.getText())) {
                                         int coinsValue2 = Integer.parseInt(String.valueOf(coinTV.getText()));
                                         coinsValue2 -= 1;
+                                        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = sharedPref.edit();
+                                        editor.putInt("coins",coinsValue2);
+                                        editor.apply();
                                         FirebaseDatabase.getInstance().getReference().child("Wallet").child(mAuth.getCurrentUser().getUid())
                                                 .setValue(new Wallet(coinsValue2)).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
@@ -443,7 +456,7 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
                                             list=new ArrayList<String>();
                                         }
                                         Log.i("list", list.toString());
-                                        if (!list.contains(inputToTranslate.getText().toString())) {
+                                        if (!list.contains(inputToTranslate.getText().toString().toLowerCase())) {
                                             list.add(inputToTranslate.getText().toString().toLowerCase());
 
 
@@ -454,6 +467,10 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
                                                     Toast.makeText(getContext(), "\"" + inputToTranslate.getText().toString() + "\" added successfully", LENGTH_SHORT).show();
                                                     int coinsValue2=Integer.parseInt(coinTV.getText().toString());
                                                     coinsValue2 -= 2;
+                                                    SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                                                    SharedPreferences.Editor editor = sharedPref.edit();
+                                                    editor.putInt("coins",coinsValue2);
+                                                    editor.apply();
                                                     FirebaseDatabase.getInstance().getReference().child("Wallet").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                                             .setValue(new Wallet(coinsValue2)).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override

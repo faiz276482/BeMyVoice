@@ -1,5 +1,7 @@
 package com.nerdytech.bemyvoice.ui;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,7 +25,10 @@ import com.nerdytech.bemyvoice.adapter.FavouritesAdapter;
 import com.nerdytech.bemyvoice.model.Favourites;
 import com.nerdytech.bemyvoice.model.Wallet;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class FavouritesFragment extends Fragment {
 
@@ -48,6 +53,19 @@ public class FavouritesFragment extends Fragment {
         coins=view.findViewById(R.id.coins);
         coinTV=view.findViewById(R.id.coins_tv);
 
+        SharedPreferences sharedPreferences=getActivity().getPreferences(Context.MODE_PRIVATE);
+        coinTV.setText(String.valueOf(sharedPreferences.getInt("coins",0)));
+        Set<String> saved=sharedPreferences.getStringSet("Favourites",new HashSet<String>());
+        List<String> text=new ArrayList<>(saved);
+        if(text.size()>0) {
+            message.setVisibility(View.INVISIBLE);
+            fav_RecyclerView.setVisibility(View.VISIBLE);
+
+            adapter = new FavouritesAdapter(view.getContext(), getActivity(), view, text, Integer.parseInt(coinTV.getText().toString()));
+            fav_RecyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        }
+
         FirebaseDatabase.getInstance().getReference().child("Wallet").child(mAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -60,6 +78,8 @@ public class FavouritesFragment extends Fragment {
 
             }
         });
+
+
 
         FirebaseDatabase.getInstance().getReference().child("Favourites").child(mAuth.getCurrentUser().getUid())
                 .addValueEventListener(new ValueEventListener() {

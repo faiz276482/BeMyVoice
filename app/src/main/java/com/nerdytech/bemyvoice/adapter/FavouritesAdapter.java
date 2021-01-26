@@ -2,6 +2,7 @@ package com.nerdytech.bemyvoice.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -66,7 +68,6 @@ public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
 
-
         holder.favouriteText.setText(listdata.get(position));
 
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
@@ -76,6 +77,10 @@ public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.Vi
                     cloudTTS.setText(listdata.get(position));
                     cloudTTS.play();
                     coins -= 2;
+                    SharedPreferences sharedPref = mActivity.getPreferences(Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putInt("coins",coins);
+                    editor.apply();
                     FirebaseDatabase.getInstance().getReference().child("Wallet").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                             .setValue(new Wallet(coins)).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

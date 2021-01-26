@@ -32,7 +32,9 @@ import com.nerdytech.bemyvoice.adapter.WordsStartingWithAdapter;
 import com.nerdytech.bemyvoice.model.MostLiked;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 
 public class VideoDictionaryFragment extends Fragment {
@@ -60,6 +62,28 @@ public class VideoDictionaryFragment extends Fragment {
         addWord=view.findViewById(R.id.add_word_btn);
         search=view.findViewById(R.id.search_btn);
 
+        SharedPreferences sharedPreferences=getActivity().getPreferences(Context.MODE_PRIVATE);
+        Set<String> saved = new HashSet<>(sharedPreferences.getStringSet("SignLanguages", new HashSet<String>()));
+        String defaultValue = "Select Language";
+        String saved_sign_language = sharedPreferences.getString("saved sign language", defaultValue);
+
+        String alphabets=sharedPreferences.getString("alphabets","ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        if(saved_sign_language.equals("Select Language"))
+        {
+            alphabets="";
+        }
+        if(saved.size()>1)
+        {
+            signLanguageAdpater=new ArrayAdapter<String>(getContext(), R.layout.support_simple_spinner_dropdown_item,new ArrayList<>(saved));
+            signLanguageAdpater.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            signLanguageSpinner.setAdapter(signLanguageAdpater);
+
+            int Position = signLanguageAdpater.getPosition(saved_sign_language);
+            signLanguageSpinner.setSelection(Position);
+
+            setResultRecyclerView(alphabets,saved_sign_language);
+        }
+
         ArrayList<String> signLanguages=new ArrayList<>();
         signLanguages.add(0,"Select Language");
 
@@ -82,6 +106,7 @@ public class VideoDictionaryFragment extends Fragment {
                             if(doc.getId().equals(saved_sign_language))
                             {
                                 s=(String)map.get("alphabets");
+                                sharedPref.edit().putString("alphabets",s).apply();
                             }
                             signLanguages.add(doc.getId().toString());
                         }
@@ -117,9 +142,12 @@ public class VideoDictionaryFragment extends Fragment {
                         .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Map<String, Object> map=documentSnapshot.getData();
-                        String s=(String)map.get("alphabets");
-                        setResultRecyclerView(s, (String) signLanguageSpinner.getItemAtPosition(position));
+                        if(documentSnapshot.exists()) {
+                            Map<String, Object> map = documentSnapshot.getData();
+                            String s = (String) map.get("alphabets");
+                            editor.putString("alphabets", s).apply();
+                            setResultRecyclerView(s, (String) signLanguageSpinner.getItemAtPosition(position));
+                        }
                     }
                 });
 

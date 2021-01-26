@@ -1,7 +1,7 @@
 package com.nerdytech.bemyvoice.adapter;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.nerdytech.bemyvoice.R;
+import com.nerdytech.bemyvoice.WordStartingWithInitialActivity;
 
 import java.util.List;
 
@@ -48,7 +49,8 @@ public class WordsStartingWithAdapter extends RecyclerView.Adapter<WordsStarting
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                mContext.startActivity(new Intent(mContext, WordStartingWithInitialActivity.class).putExtra("saved_sign_language",selectedLanguage)
+                        .putExtra("initials",holder.initiatlsTextView.getText().toString()));
             }
         });
 
