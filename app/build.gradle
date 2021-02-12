@@ -26,6 +26,8 @@ android {
         versionCode 1
         versionName "1.0"
 
+        multiDexEnabled true
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -67,10 +69,12 @@ dependencies {
 
     // FirebaseUI for Cloud Firestore
     implementation 'com.firebaseui:firebase-ui-firestore:7.1.1'
+    implementation project(path: ':library')
 
     //video trimmer
-//    implementation 'com.github.a914-gowtham:Android-video-trimmer:1.5.2'
-
+    implementation project(path: ':library')
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'com.cocosw:bottomsheet:1.5.0@aar'
 
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
@@ -86,4 +90,6 @@ dependencies {
     //SquarePicasso
     implementation 'com.squareup.picasso:picasso:2.71828'
 
+    //scalable dp
+    implementation 'com.intuit.sdp:sdp-android:1.0.6'
 }

@@ -22,5 +22,16 @@
         android:layout_margin="5dp"
         android:background="@drawable/bordered_backround"
         android:id="@+id/video_by_user_rv"/>
+    
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:src="@drawable/ic_baseline_video_call_24"
+        android:scaleType="fitCenter"
+        app:maxImageSize="@dimen/_25sdp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/_15sdp"
+        android:id="@+id/add_video"/>
 
 </RelativeLayout>

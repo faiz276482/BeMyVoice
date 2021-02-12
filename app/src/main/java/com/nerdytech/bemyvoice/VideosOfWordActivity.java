@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -22,20 +23,24 @@ import com.nerdytech.bemyvoice.model.Video;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 public class VideosOfWordActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     WordVideoByUserAdapter adapter;
     TextView noVideoAvailabeTV;
-
+    FloatingActionButton add_video;
     String saved_sign_language;
     String initial;
     String word;
+    String meaning;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videos_of_word);
 
+        add_video=findViewById(R.id.add_video);
         recyclerView=findViewById(R.id.video_by_user_rv);
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
@@ -44,7 +49,7 @@ public class VideosOfWordActivity extends AppCompatActivity {
         Intent intent=getIntent();
         word=intent.getStringExtra("word");
         saved_sign_language = intent.getStringExtra("saved_sign_language");
-        String meaning = intent.getStringExtra("meaning");
+        meaning = intent.getStringExtra("meaning");
         initial = intent.getStringExtra("initials");
         System.out.println("saved sign language="+saved_sign_language);
         System.out.println("In VideosOfWordActivity\n"+saved_sign_language+"\n"+word+"\n"+meaning);
@@ -69,6 +74,18 @@ public class VideosOfWordActivity extends AppCompatActivity {
                     noVideoAvailabeTV.setText(msg);
                     noVideoAvailabeTV.setVisibility(View.VISIBLE);
                 }
+            }
+        });
+
+        add_video.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(VideosOfWordActivity.this, VideoEditAndUploadActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|FLAG_ACTIVITY_NEW_TASK)
+                        .putExtra("saved_sign_language",saved_sign_language)
+                        .putExtra("word",word)
+                        .putExtra("initials",initial)
+                        .putExtra("meaning",meaning));
             }
         });
 //        colRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {

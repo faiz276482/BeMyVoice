@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    tools:context=".VideoEditAndUploadActivity">
+
+    <androidx.core.widget.NestedScrollView style="@style/VView">
+
+        <LinearLayout style="@style/VView">
+
+            <VideoView
+                android:id="@+id/video_view"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="300dp" />
+
+
+
+
+                <Button
+                    android:id="@+id/btn_min_max_gap"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="15dp"
+                    android:background="@drawable/button_background"
+                    android:textAllCaps="false"
+                    android:layout_gravity="center"
+                    android:textColor="@color/colorWhite"
+                    android:text="@string/choose_video" />
+            <Button
+                android:id="@+id/btn_upload"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:background="@drawable/button_background"
+                android:textAllCaps="false"
+                android:layout_gravity="center"
+                android:enabled="false"
+                android:textColor="@color/colorWhite"
+                android:text="@string/upload_video" />
+
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
+</LinearLayout>
+
+
