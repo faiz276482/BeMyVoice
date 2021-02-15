@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -35,6 +37,7 @@ public class VideosOfWordActivity extends AppCompatActivity {
     String initial;
     String word;
     String meaning;
+    boolean userVideoAvailable=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +65,10 @@ public class VideosOfWordActivity extends AppCompatActivity {
                 List<Video> videoData=new ArrayList<>();
                 for (DocumentSnapshot document : value.getDocuments()) {
                     videoData.add(document.toObject(Video.class));
+                    if(document.getId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
+                    {
+                        userVideoAvailable=true;
+                    }
                 }
                 if(videoData.size()>0) {
                     noVideoAvailabeTV.setVisibility(View.INVISIBLE);
@@ -80,12 +87,18 @@ public class VideosOfWordActivity extends AppCompatActivity {
         add_video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(VideosOfWordActivity.this, VideoEditAndUploadActivity.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|FLAG_ACTIVITY_NEW_TASK)
-                        .putExtra("saved_sign_language",saved_sign_language)
-                        .putExtra("word",word)
-                        .putExtra("initials",initial)
-                        .putExtra("meaning",meaning));
+                if(userVideoAvailable)
+                {
+                    Toast.makeText(VideosOfWordActivity.this, "You have already uploaded video once for this word\nplease go upload videos for other words or vote for legitimacy of other videos.", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    startActivity(new Intent(VideosOfWordActivity.this, VideoEditAndUploadActivity.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | FLAG_ACTIVITY_NEW_TASK)
+                            .putExtra("saved_sign_language", saved_sign_language)
+                            .putExtra("word", word)
+                            .putExtra("initials", initial)
+                            .putExtra("meaning", meaning));
+                }
             }
         });
 //        colRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {

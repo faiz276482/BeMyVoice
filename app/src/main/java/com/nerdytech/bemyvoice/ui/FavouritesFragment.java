@@ -30,6 +30,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class FavouritesFragment extends Fragment {
 
     View view;
@@ -39,6 +41,7 @@ public class FavouritesFragment extends Fragment {
     TextView message;
     LinearLayout coins;
     TextView coinTV;
+    String PreferenceKey="beMyVoice";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,7 +56,7 @@ public class FavouritesFragment extends Fragment {
         coins=view.findViewById(R.id.coins);
         coinTV=view.findViewById(R.id.coins_tv);
 
-        SharedPreferences sharedPreferences=getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences=getActivity().getSharedPreferences(PreferenceKey, MODE_PRIVATE);
         coinTV.setText(String.valueOf(sharedPreferences.getInt("coins",0)));
         Set<String> saved=sharedPreferences.getStringSet("Favourites",new HashSet<String>());
         List<String> text=new ArrayList<>(saved);
@@ -101,6 +104,10 @@ public class FavouritesFragment extends Fragment {
                                 message.setVisibility(View.VISIBLE);
                                 fav_RecyclerView.setVisibility(View.INVISIBLE);
                             }
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            Set<String> set = new HashSet<String>(favourites);
+                            editor.putStringSet("Favourites",set);
+                            editor.apply();
                         }
                         else {
                             message.setVisibility(View.VISIBLE);

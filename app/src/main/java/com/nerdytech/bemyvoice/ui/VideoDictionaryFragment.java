@@ -46,6 +46,7 @@ public class VideoDictionaryFragment extends Fragment {
     RecyclerView result;
     WordsStartingWithAdapter adapter;
     ArrayList<String > resultArray;
+    String PreferenceKey="beMyVoice";
 
 
     @Override
@@ -62,7 +63,7 @@ public class VideoDictionaryFragment extends Fragment {
         addWord=view.findViewById(R.id.add_word_btn);
         search=view.findViewById(R.id.search_btn);
 
-        SharedPreferences sharedPreferences=getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences=getActivity().getSharedPreferences(PreferenceKey,Context.MODE_PRIVATE);
         Set<String> saved = new HashSet<>(sharedPreferences.getStringSet("SignLanguages", new HashSet<String>()));
         String defaultValue = "Select Language";
         String saved_sign_language = sharedPreferences.getString("saved sign language", defaultValue);
@@ -93,7 +94,7 @@ public class VideoDictionaryFragment extends Fragment {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful())
                 {
-                    SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                    SharedPreferences sharedPref = getActivity().getSharedPreferences(PreferenceKey,Context.MODE_PRIVATE);
                     String defaultValue = "Select Language";
                     String saved_sign_language = sharedPref.getString("saved sign language", defaultValue);
                     System.out.println("saved sign language="+saved_sign_language);
@@ -134,7 +135,7 @@ public class VideoDictionaryFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 //                Toast.makeText(getContext(), (CharSequence) lang1.getItemAtPosition(position), Toast.LENGTH_SHORT).show();
-                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences sharedPref = getActivity().getSharedPreferences(PreferenceKey,Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString("saved sign language", String.valueOf(signLanguageSpinner.getItemAtPosition(position)));
                 editor.apply();

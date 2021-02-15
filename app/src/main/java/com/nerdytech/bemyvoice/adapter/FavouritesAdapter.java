@@ -41,6 +41,7 @@ public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.Vi
     List<String> listdata;
     CloudTTS cloudTTS;
     int coins;
+    String PreferenceKey="beMyVoice";
 
     FirebaseUser fUser;
 
@@ -77,7 +78,7 @@ public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.Vi
                     cloudTTS.setText(listdata.get(position));
                     cloudTTS.play();
                     coins -= 2;
-                    SharedPreferences sharedPref = mActivity.getPreferences(Context.MODE_PRIVATE);
+                    SharedPreferences sharedPref = mActivity.getSharedPreferences(PreferenceKey,Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putInt("coins",coins);
                     editor.apply();

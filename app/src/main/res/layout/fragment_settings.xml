@@ -334,12 +334,33 @@
                 android:progress="25"/>
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bordered_backround"
+            android:id="@+id/reset_ll"
+            android:layout_below="@+id/speecd_options">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/button_background"
+                android:text="@string/reset_pitch_speed"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:textSize="20sp"
+                android:id="@+id/reset_pitch_and_speed"
+                android:layout_below="@+id/select_style"/>
+        </LinearLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/lang_and_style"
             android:background="@drawable/bordered_backround"
-            android:layout_below="@+id/speecd_options">
+            android:layout_below="@+id/reset_ll">
 
             <RelativeLayout
                 android:layout_width="match_parent"

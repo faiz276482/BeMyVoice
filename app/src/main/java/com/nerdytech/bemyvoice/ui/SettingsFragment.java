@@ -54,7 +54,7 @@ public class SettingsFragment extends Fragment implements MainContract.IView {
     RelativeLayout neutral,happy,sad,sick,blessed,shocked,angry,celebrate;
     TextView neutralTV,happyTV,sadTV,sickTV,blessedTV,shockedTV,angryTV,celebrateTV,pitchTV,speedTV;
     SeekBar pitch,speed;
-    Button testVoice;
+    Button testVoice,resetPitchAndSpeed;
     Spinner language,style;
     ArrayAdapter<String> langAdadpter,styleAdadpter;
     String[] voice_style;
@@ -82,18 +82,15 @@ public class SettingsFragment extends Fragment implements MainContract.IView {
         shockedTV=view.findViewById(R.id.shocked_TV);
         angryTV=view.findViewById(R.id.angry_TV);
 //        celebrateTV=view.findViewById(R.id.celebrate_TV);
-        pitch=view.findViewById(R.id.pitch_seekbar);
-        speed=view.findViewById(R.id.speed_seekbar);
         testVoice=view.findViewById(R.id.test_voice_btn);
+        resetPitchAndSpeed=view.findViewById(R.id.reset_pitch_and_speed);
         language=view.findViewById(R.id.select_language_spinner);
         style=view.findViewById(R.id.select_style_spinner);
         pitch=view.findViewById(R.id.pitch_seekbar);
         speed=view.findViewById(R.id.speed_seekbar);
-        testVoice=view.findViewById(R.id.test_voice_btn);
-        language=view.findViewById(R.id.select_language_spinner);
-        style=view.findViewById(R.id.select_style_spinner);
         pitchTV=view.findViewById(R.id.pitch_TV);
         speedTV=view.findViewById(R.id.speed_TV);
+
 
         pitch.setMax(4000);
         pitch.setProgress(2000);
@@ -350,6 +347,45 @@ public class SettingsFragment extends Fragment implements MainContract.IView {
             @Override
             public void onClick(View v) {
                 mPresenter.startSpeak("Hello!\nThis is a test!");
+//                Log.i("ValueOfpitch", String.valueOf(pitch.getProgress()));
+//                Log.i("ValueOfSpeed", String.valueOf(speed.getProgress()));
+            }
+        });
+
+        resetPitchAndSpeed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                String defaultValue = getResources().getString(R.string.saved_default_emotion);
+                String chosenEmotion = sharedPref.getString(getString(R.string.saved_chosen_emotion), defaultValue);
+                switch (chosenEmotion) {
+                    case "neutral":
+                        pitch.setProgress(2000);
+                        speed.setProgress(75);
+                        break;
+                    case "happy":
+                        pitch.setProgress(2039);
+                        speed.setProgress(117);
+                        break;
+                    case "sad":
+
+                        pitch.setProgress(1026);
+                        speed.setProgress(66);
+                        break;
+                    case "sick":
+                        pitch.setProgress(2921);
+                        speed.setProgress(69);
+                        break;
+                    case "angry":
+                        pitch.setProgress(1596);
+                        speed.setProgress(75);
+                        break;
+                    case "shocked":
+                        pitch.setProgress(2557);
+                        speed.setProgress(80);
+                        break;
+                }
+
             }
         });
 
@@ -372,32 +408,32 @@ public class SettingsFragment extends Fragment implements MainContract.IView {
             case "happy":
                 happy.setBackgroundResource(R.drawable.emotion_background);
                 happyTV.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-                pitch.setProgress(sharedPref.getInt("happy_pitch",2000));
-                speed.setProgress(sharedPref.getInt("happy_speed",75));
+                pitch.setProgress(sharedPref.getInt("happy_pitch",2039));
+                speed.setProgress(sharedPref.getInt("happy_speed",117));
                 break;
             case "sad":
                 sad.setBackgroundResource(R.drawable.emotion_background);
                 sadTV.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-                pitch.setProgress(sharedPref.getInt("sad_pitch",2000));
-                speed.setProgress(sharedPref.getInt("sad_speed",75));
+                pitch.setProgress(sharedPref.getInt("sad_pitch",1026));
+                speed.setProgress(sharedPref.getInt("sad_speed",66));
                 break;
             case "sick":
                 sick.setBackgroundResource(R.drawable.emotion_background);
                 sickTV.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-                pitch.setProgress(sharedPref.getInt("sick_pitch",2000));
-                speed.setProgress(sharedPref.getInt("sick_speed",75));
+                pitch.setProgress(sharedPref.getInt("sick_pitch",2921));
+                speed.setProgress(sharedPref.getInt("sick_speed",69));
                 break;
             case "angry":
                 angry.setBackgroundResource(R.drawable.emotion_background);
                 angryTV.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-                pitch.setProgress(sharedPref.getInt("angry_pitch",2000));
+                pitch.setProgress(sharedPref.getInt("angry_pitch",1596));
                 speed.setProgress(sharedPref.getInt("angry_speed",75));
                 break;
             case "shocked":
                 shocked.setBackgroundResource(R.drawable.emotion_background);
                 shockedTV.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-                pitch.setProgress(sharedPref.getInt("shocked_pitch",2000));
-                speed.setProgress(sharedPref.getInt("shocked_speed",75));
+                pitch.setProgress(sharedPref.getInt("shocked_pitch",2557));
+                speed.setProgress(sharedPref.getInt("shocked_speed",80));
                 break;
         }
         float pitch_ = ((float) (pitch.getProgress() - 2000) / 10);

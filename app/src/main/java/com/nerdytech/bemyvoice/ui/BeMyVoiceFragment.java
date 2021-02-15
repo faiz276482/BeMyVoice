@@ -72,6 +72,7 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
     View view;
     private static final long WAIT_TIME = 2000L;
     private static final int TEXT_TO_SPEECH_CODE = 0x100;
+    String PreferenceKey="beMyVoice";
 
     private long TOUCH_TIME = 0;
 
@@ -133,7 +134,7 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
         coins=view.findViewById(R.id.coins);
         coinTV=view.findViewById(R.id.coins_tv);
 
-        SharedPreferences sharedPreferences=getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences=getActivity().getSharedPreferences(PreferenceKey,Context.MODE_PRIVATE);
         coinTV.setText(String.valueOf(sharedPreferences.getInt("coins",0)));
 
 
@@ -304,7 +305,7 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
                     int coinsValue=Integer.parseInt(String.valueOf(coinTV.getText()));
                     if(coinsValue>1) {
                         coinsValue -= 2;
-                        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                        SharedPreferences sharedPref = getActivity().getSharedPreferences(PreferenceKey,Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPref.edit();
                         editor.putInt("coins",coinsValue);
                         editor.apply();
@@ -349,74 +350,19 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
                         int coinsValue = Integer.parseInt(String.valueOf(coinTV.getText()));
                         if(coinsValue>0) {
 
-                            new AsyncTask<Void, Void, Void>() {
+                            MyAsyncTask asyncTask =new MyAsyncTask(new AsyncResponse() {
 
-                                @SuppressLint("WrongThread")
                                 @Override
-                                protected Void doInBackground(Void... voids) {
-                                    InputStream inputStream = getResources().openRawResource(R.raw.credentials);
-                                    GoogleCredentials credentials = null;
-                                    try {
-                                        credentials = GoogleCredentials.fromStream(inputStream).createScoped(TranslateScopes.all());
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                    Log.d("credentials", credentials.toString());
-                                    HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
-                                    // Create the credential
-                                    HttpTransport transport = new NetHttpTransport();
-                                    JsonFactory jsonFactory = new JacksonFactory();
-                                    Translate translate = new Translate.Builder(transport, jsonFactory, requestInitializer)
-                                            .setApplicationName("beMyVoice")
-                                            .build();
+                                public void processFinish(Object output) {
+                                    Log.d("Response From Asynchronous task:", (String) output);
 
-                                    originalText = inputToTranslate.getText().toString();
-                                    String target = "en";
-                                    if (!lang2.getSelectedItem().equals(R.string.saved_lang2_default_key)) {
-                                        target = Languages.languages.get(lang2.getSelectedItem().toString());
-                                    }
-                                    String source = Languages.languages.get(lang1.getSelectedItem().toString());
-                                    String finalTarget = target;
-
-
-                                    List<String> texts = new LinkedList<>();
-                                    texts.add(originalText);
-                                    List<TranslationsResource> translationsResourceList =
-                                            null;
-                                    try {
-                                        translationsResourceList = translate
-                                                .translations()
-                                                .list(texts, target)
-                                                .setSource(source)
-                                                .setKey(null)
-                                                .set("model", null)
-                                                .setFormat(null)
-                                                .execute()
-                                                .getTranslations();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                    Log.d("Translated Text", translationsResourceList.get(0).get("translatedText").toString());
-                                    setTranlatedTV(translationsResourceList.get(0).get("translatedText").toString());
-                                    if (!TextUtils.isEmpty(inputToTranslate.getText())) {
-                                        int coinsValue2 = Integer.parseInt(String.valueOf(coinTV.getText()));
-                                        coinsValue2 -= 1;
-                                        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-                                        SharedPreferences.Editor editor = sharedPref.edit();
-                                        editor.putInt("coins",coinsValue2);
-                                        editor.apply();
-                                        FirebaseDatabase.getInstance().getReference().child("Wallet").child(mAuth.getCurrentUser().getUid())
-                                                .setValue(new Wallet(coinsValue2)).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Toast.makeText(getContext(), "-1 coin for textTranslation!", LENGTH_SHORT).show();
-                                            }
-                                        });
-                                    }
-
-                                    return null;
+                                    translatedTv.setText((String) output);
+                                    translatedText=translatedTv.getText().toString();
                                 }
-                            }.execute();
+                            });
+
+                            asyncTask.execute();//new Object[] { "Your request to aynchronous task class is giving here.." });
+
                         }
                         else {
                             Toast.makeText(getContext(), "Coins exhausted!\nTo avail this service please Add coins by clicking on the coins button!", LENGTH_SHORT).show();
@@ -467,7 +413,7 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
                                                     Toast.makeText(getContext(), "\"" + inputToTranslate.getText().toString() + "\" added successfully", LENGTH_SHORT).show();
                                                     int coinsValue2=Integer.parseInt(coinTV.getText().toString());
                                                     coinsValue2 -= 2;
-                                                    SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                                                    SharedPreferences sharedPref = getActivity().getSharedPreferences(PreferenceKey,Context.MODE_PRIVATE);
                                                     SharedPreferences.Editor editor = sharedPref.edit();
                                                     editor.putInt("coins",coinsValue2);
                                                     editor.apply();
@@ -506,10 +452,6 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
         return view;
     }
 
-    private void setTranlatedTV(String translatedText) {
-        translatedTv.setText(translatedText);
-        this.translatedText=translatedText;
-    }
 
 
     private void loadEmotions() {
@@ -527,32 +469,32 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
             case "happy":
                 happy.setBackgroundResource(R.drawable.emotion_background);
                 happyTV.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-                pitch=(sharedPref.getInt("happy_pitch",2000));
-                speed=(sharedPref.getInt("happy_speed",75));
+                pitch=(sharedPref.getInt("happy_pitch",2039));
+                speed=(sharedPref.getInt("happy_speed",117));
                 break;
             case "sad":
                 sad.setBackgroundResource(R.drawable.emotion_background);
                 sadTV.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-                pitch=(sharedPref.getInt("sad_pitch",2000));
-                speed=(sharedPref.getInt("sad_speed",75));
+                pitch=(sharedPref.getInt("sad_pitch",1026));
+                speed=(sharedPref.getInt("sad_speed",66));
                 break;
             case "sick":
                 sick.setBackgroundResource(R.drawable.emotion_background);
                 sickTV.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-                pitch=(sharedPref.getInt("sick_pitch",2000));
-                speed=(sharedPref.getInt("sick_speed",75));
+                pitch=(sharedPref.getInt("sick_pitch",2921));
+                speed=(sharedPref.getInt("sick_speed",69));
                 break;
             case "angry":
                 angry.setBackgroundResource(R.drawable.emotion_background);
                 angryTV.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-                pitch=(sharedPref.getInt("angry_pitch",2000));
+                pitch=(sharedPref.getInt("angry_pitch",1596));
                 speed=(sharedPref.getInt("angry_speed",75));
                 break;
             case "shocked":
                 shocked.setBackgroundResource(R.drawable.emotion_background);
                 shockedTV.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
-                pitch=(sharedPref.getInt("shocked_pitch",2000));
-                speed=(sharedPref.getInt("shocked_speed",75));
+                pitch=(sharedPref.getInt("shocked_pitch",2557));
+                speed=(sharedPref.getInt("shocked_speed",80));
                 break;
         }
     }
@@ -571,17 +513,6 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
         angryTV.setTextColor(ContextCompat.getColor(getContext(),R.color.colorBlack));
     }
 
-    public boolean checkInternetConnection() {
-
-        //Check internet connection:
-        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        //Means that we are connected to a network (mobile or wi-fi)
-        connected = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
-
-        return connected;
-    }
 
 
     //Functions for Speech To Text conversion
@@ -599,82 +530,16 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQ_CODE_SPEECH_INPUT) {
-            if (resultCode == RESULT_OK && null != data) {
-                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                inputToTranslate.setText(result.get(0));
-            }
-        }
-        // init android tts
-        if (requestCode == TEXT_TO_SPEECH_CODE) {
-            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-                mPresenter.initAndroidTTS();
-                return;
-            }
-
-            Toast.makeText(getContext(),"You do not have the text to speech file you have to install", LENGTH_SHORT);
-            Intent installIntent = new Intent();
-            installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-            startActivity(installIntent);
-        }
-    }
-
-
-
-
-
-    @Override
     public void setLanguages(final String[] languages) {
-//        if (languages == null) return;
-//
-//        mAdapterLanguage = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item
-//                , languages);
-//        mAdapterLanguage.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//
-//        mSpinnerLanguage.setAdapter(mAdapterLanguage);
-//        mSpinnerLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                mPresenter.selectLanguage(languages[position]);
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//            }
-//        });
     }
 
 
     @Override
     public void setStyles(final String[] styles) {
-//        // init AdapterStyle
-//        mAdapterStyle = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item
-//                , styles);
-//        mAdapterStyle.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//
-//        // init mSpinnerStyle
-//        mSpinnerStyle.setAdapter(mAdapterStyle);
-//        mSpinnerStyle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                mPresenter.selectStyle(styles[position]);
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//            }
-//        });
     }
 
     @Override
     public void clearUI() {
-//        mSpinnerLanguage.setAdapter(null);
-//        mSpinnerStyle.setAdapter(null);
-//        setTextViewGender("");
-//        setTextViewSampleRate("");
     }
 
     @Override
@@ -693,12 +558,10 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
 
     @Override
     public void setTextViewGender(String gender) {
-//        mTextViewGender.setText(gender);
     }
 
     @Override
     public void setTextViewSampleRate(String sampleRate) {
-//        mTextViewSampleRate.setText(sampleRate);
     }
 
     @Override
@@ -736,4 +599,132 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkIntent, TEXT_TO_SPEECH_CODE);
     }
+
+    //text translation in Background using AsyncTask
+
+    public boolean checkInternetConnection() {
+
+        //Check internet connection:
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        //Means that we are connected to a network (mobile or wi-fi)
+        connected = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
+
+        return connected;
+    }
+
+    public interface AsyncResponse {
+        void processFinish(Object output);
+    }
+
+    public class MyAsyncTask extends AsyncTask<Object, Object, Object> {
+
+        public AsyncResponse delegate = null;//Call back interface
+
+        public MyAsyncTask(AsyncResponse asyncResponse) {
+            delegate = asyncResponse;//Assigning call back interfacethrough constructor
+        }
+
+        @Override
+        protected Object doInBackground(Object... params) {
+
+            //My Background tasks are written here
+
+            InputStream inputStream = getResources().openRawResource(R.raw.credentials);
+            GoogleCredentials credentials = null;
+            try {
+                credentials = GoogleCredentials.fromStream(inputStream).createScoped(TranslateScopes.all());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.d("credentials", credentials.toString());
+            HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
+            // Create the credential
+            HttpTransport transport = new NetHttpTransport();
+            JsonFactory jsonFactory = new JacksonFactory();
+            Translate translate = new Translate.Builder(transport, jsonFactory, requestInitializer)
+                    .setApplicationName("beMyVoice")
+                    .build();
+
+            originalText = inputToTranslate.getText().toString();
+            String target = "en";
+            if (!lang2.getSelectedItem().equals(R.string.saved_lang2_default_key)) {
+                target = Languages.languages.get(lang2.getSelectedItem().toString());
+            }
+            String source = Languages.languages.get(lang1.getSelectedItem().toString());
+
+            List<String> texts = new LinkedList<>();
+            texts.add(originalText);
+            List<TranslationsResource> translationsResourceList =
+                    null;
+            try {
+                translationsResourceList = translate
+                        .translations()
+                        .list(texts, target)
+                        .setSource(source)
+                        .setKey(null)
+                        .set("model", null)
+                        .setFormat(null)
+                        .execute()
+                        .getTranslations();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.d("Translated Text", translationsResourceList.get(0).get("translatedText").toString());
+//            setTranlatedTV(translationsResourceList.get(0).get("translatedText").toString());
+            if (!TextUtils.isEmpty(inputToTranslate.getText())) {
+                int coinsValue2 = Integer.parseInt(String.valueOf(coinTV.getText()));
+                coinsValue2 -= 1;
+                SharedPreferences sharedPref = getActivity().getSharedPreferences(PreferenceKey,Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putInt("coins",coinsValue2);
+                editor.apply();
+                FirebaseDatabase.getInstance().getReference().child("Wallet").child(mAuth.getCurrentUser().getUid())
+                        .setValue(new Wallet(coinsValue2)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(getContext(), "-1 coin for textTranslation!", LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            return translationsResourceList.get(0).get("translatedText").toString();
+//            return {resutl Object}
+
+        }
+
+        @Override
+        protected void onPostExecute(Object result) {
+            delegate.processFinish(result);
+        }
+
+    }
+
+    //OnActivityResult
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQ_CODE_SPEECH_INPUT) {
+            if (resultCode == RESULT_OK && null != data) {
+                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                inputToTranslate.setText(result.get(0));
+            }
+        }
+        // init android tts
+        if (requestCode == TEXT_TO_SPEECH_CODE) {
+            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                mPresenter.initAndroidTTS();
+                return;
+            }
+
+            Toast.makeText(getContext(),"You do not have the text to speech file you have to install", LENGTH_SHORT);
+            Intent installIntent = new Intent();
+            installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+            startActivity(installIntent);
+        }
+    }
 }
+

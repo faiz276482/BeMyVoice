@@ -23,6 +23,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.nerdytech.bemyvoice.adapter.FavouritesAdapter;
 import com.nerdytech.bemyvoice.model.Favourites;
+import com.nerdytech.bemyvoice.model.User;
 import com.nerdytech.bemyvoice.model.Wallet;
 import com.nerdytech.bemyvoice.ui.BeMyVoiceFragment;
 import com.nerdytech.bemyvoice.ui.FavouritesFragment;
@@ -50,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private Fragment selectorFragment;
     FirebaseAuth mAuth;
     FirebaseUser mUser;
+    private String TAG="MainActivity";
+    String PreferenceKey="beMyVoice";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,11 +64,11 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth= FirebaseAuth.getInstance();
         mUser=mAuth.getCurrentUser();
-        FirebaseDatabase.getInstance().getReference().child("Wallet").child(mAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Wallet").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Wallet wallet=snapshot.getValue(Wallet.class);
-                SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences sharedPref = getSharedPreferences(PreferenceKey,Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putInt("coins",wallet.getCoins());
                 editor.apply();
@@ -77,9 +80,32 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        FirebaseDatabase.getInstance().getReference().child("User").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user=snapshot.getValue(User.class);
+                SharedPreferences sharedPref = getSharedPreferences(PreferenceKey,Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                Log.i(TAG,"username:"+user.getName());
+
+                editor.putString("name",user.getName());
+                editor.putString("email",user.getEmail());
+                editor.putString("dob",user.getDob());
+                editor.putString("mobile",user.getMobile());
+                editor.putString("profile_pic",user.getProfile_pic());
+                editor.putString("uid",user.getUid());
+                editor.apply();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
 
         FirebaseDatabase.getInstance().getReference().child("Favourites").child(mAuth.getCurrentUser().getUid())
-                .addValueEventListener(new ValueEventListener() {
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         List<String> favourites;
@@ -90,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                         else {
                             favourites=new ArrayList<>();
                         }
-                        SharedPreferences sharedPreferences=getPreferences(MODE_PRIVATE);
+                        SharedPreferences sharedPreferences=getSharedPreferences(PreferenceKey,MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         Set<String> set = new HashSet<String>(favourites);
                         editor.putStringSet("Favourites",set);
@@ -108,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful())
                         {
-                            SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                            SharedPreferences sharedPref = getSharedPreferences(PreferenceKey,Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor=sharedPref.edit();
                             String defaultValue = "Select Language";
                             String saved_sign_language = sharedPref.getString("saved sign language", defaultValue);
