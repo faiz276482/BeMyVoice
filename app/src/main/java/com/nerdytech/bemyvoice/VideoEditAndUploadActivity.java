@@ -76,6 +76,7 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
     String initial;
     String word;
     String meaning;
+    String PreferenceKey="beMyVoice";
     private static final String TAG = "VideoEditAndUploadActivity";
 
     @Override
@@ -103,9 +104,10 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
         findViewById(R.id.btn_upload).setOnClickListener(this);
     }
 
-    public void getAuthorname(String uid){
-        SharedPreferences sharedPreferences=getSharedPreferences("User",Context.MODE_PRIVATE);
+    public String getAuthorname(String uid){
+        SharedPreferences sharedPreferences=getSharedPreferences(PreferenceKey,Context.MODE_PRIVATE);
         author=sharedPreferences.getString("name","");
+        return author;
 
     }
 
@@ -113,7 +115,7 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
     {
         String upload_date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         String uid=FirebaseAuth.getInstance().getCurrentUser().getUid();
-        getAuthorname(uid);
+        author=getAuthorname(uid);
         Video video=new Video(url,author,upload_date,0,0);
 
         DocumentReference docRef= FirebaseFirestore.getInstance().collection("video_dictionary")

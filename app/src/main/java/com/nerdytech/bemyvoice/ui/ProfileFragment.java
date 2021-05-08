@@ -1,6 +1,8 @@
 package com.nerdytech.bemyvoice.ui;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,6 +42,7 @@ public class ProfileFragment extends Fragment {
     FirebaseAuth mAuth;
     FirebaseUser mUser;
     private GoogleSignInClient mGoogleSignInClient;
+    String PreferenceKey="beMyVoice";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,6 +62,19 @@ public class ProfileFragment extends Fragment {
 //        toolbar=view.findViewById(R.id.toolbar);
 //        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 //        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Profile");
+
+        SharedPreferences sharedPreferences=getActivity().getSharedPreferences(PreferenceKey, Context.MODE_PRIVATE);
+        name.setText(sharedPreferences.getString("name",""));
+        mobile.setText(sharedPreferences.getString("mobile",""));
+        email.setText(sharedPreferences.getString("email",""));
+        dob.setText(sharedPreferences.getString("dob",""));
+        String pic=sharedPreferences.getString("profile_pic","");
+        if(pic.equals("default")){
+            profile_image.setImageResource(R.mipmap.ic_launcher_round);
+        }
+        else{
+            Picasso.get().load(pic).into(profile_image);
+        }
 
         try{
             if(mUser!=null) {//Checking if user is actually present
