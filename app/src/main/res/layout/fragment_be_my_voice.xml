@@ -12,21 +12,21 @@
         android:id="@+id/translate"
         android:background="@drawable/bordered_backround">
         <Spinner
-            android:layout_width="150dp"
+            android:layout_width="@dimen/_130sdp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:id="@+id/lang1"
             />
         <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/_35sdp"
+            android:layout_height="@dimen/_35sdp"
             android:scaleType="fitXY"
             android:src="@drawable/ic_baseline_compare_arrows_24"
             android:background="@android:color/transparent"
             android:layout_centerInParent="true"
             android:id="@+id/exchange"/>
         <Spinner
-            android:layout_width="150dp"
+            android:layout_width="@dimen/_130sdp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
@@ -46,7 +46,7 @@
         android:background="@drawable/bordered_backround"
         android:scrollbarStyle="insideOverlay"
         android:scrollbarDefaultDelayBeforeFade="100"
-        android:scrollbarSize="1dp"
+        android:scrollbarSize="@dimen/_1sdp"
         android:isScrollContainer="true"
         android:nestedScrollingEnabled="true"
         android:scrollbars="horizontal"
@@ -54,7 +54,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_margin="@dimen/_4sdp"
             android:layout_below="@+id/emotions_tv"
             android:orientation="horizontal"
             android:id="@+id/upper_row">
@@ -63,13 +63,13 @@
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"/>
             <RelativeLayout
-                android:layout_width="95dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/_85sdp"
+                android:layout_height="@dimen/_35sdp"
                 android:background="@drawable/emotion_background2"
                 android:id="@+id/neutral">
                 <ImageButton
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
                     android:src="@drawable/ic_neutral"
                     android:background="@android:color/transparent"
                     android:layout_centerVertical="true"
@@ -84,7 +84,7 @@
                     android:text="@string/neutral"
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@+id/neutral_emoji"
-                    android:layout_marginStart="5dp"/>
+                    android:layout_marginStart="@dimen/_4sdp"/>
 
             </RelativeLayout>
             <Space
@@ -92,19 +92,19 @@
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"/>
             <RelativeLayout
-                android:layout_width="95dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/_85sdp"
+                android:layout_height="@dimen/_35sdp"
                 android:background="@drawable/emotion_background2"
                 android:id="@+id/angry">
                 <ImageButton
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
                     android:src="@drawable/ic_angry"
                     android:background="@android:color/transparent"
                     android:layout_centerVertical="true"
                     android:scaleType="fitXY"
                     android:id="@+id/angry_emoji"
-                    android:layout_marginStart="5dp"/>
+                    android:layout_marginStart="@dimen/_4sdp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -113,7 +113,7 @@
                     android:id="@+id/angry_TV"
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@+id/angry_emoji"
-                    android:layout_marginStart="5dp"/>
+                    android:layout_marginStart="@dimen/_4sdp"/>
 
             </RelativeLayout>
             <!--            <RelativeLayout-->
@@ -149,19 +149,19 @@
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"/>
             <RelativeLayout
-                android:layout_width="95dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/_85sdp"
+                android:layout_height="@dimen/_35sdp"
                 android:background="@drawable/emotion_background2"
                 android:id="@+id/sad">
                 <ImageButton
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
                     android:src="@drawable/ic_sad"
                     android:background="@android:color/transparent"
                     android:layout_centerVertical="true"
                     android:scaleType="fitXY"
                     android:id="@+id/sad_emoji"
-                    android:layout_marginStart="5dp"/>
+                    android:layout_marginStart="@dimen/_4sdp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -170,7 +170,7 @@
                     android:id="@+id/sad_TV"
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@+id/sad_emoji"
-                    android:layout_marginStart="5dp"/>
+                    android:layout_marginStart="@dimen/_4sdp"/>
 
             </RelativeLayout>
             <Space
@@ -183,7 +183,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_margin="@dimen/_4sdp"
             android:orientation="horizontal"
             android:layout_below="@+id/upper_row"
             android:id="@+id/lower_row">
@@ -192,19 +192,19 @@
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"/>
             <RelativeLayout
-                android:layout_width="95dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/_85sdp"
+                android:layout_height="@dimen/_35sdp"
                 android:background="@drawable/emotion_background2"
                 android:id="@+id/happy">
                 <ImageButton
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
                     android:src="@drawable/ic_happy"
                     android:background="@android:color/transparent"
                     android:layout_centerVertical="true"
                     android:scaleType="fitXY"
                     android:id="@+id/happy_emoji"
-                    android:layout_marginStart="5dp"/>
+                    android:layout_marginStart="@dimen/_4sdp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -213,7 +213,7 @@
                     android:id="@+id/happy_TV"
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@+id/happy_emoji"
-                    android:layout_marginStart="5dp"/>
+                    android:layout_marginStart="@dimen/_4sdp"/>
 
             </RelativeLayout>
             <Space
@@ -250,19 +250,19 @@
             <!--                android:layout_height="wrap_content"-->
             <!--                android:layout_width="0dp"/>-->
             <RelativeLayout
-                android:layout_width="95dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/_85sdp"
+                android:layout_height="@dimen/_35sdp"
                 android:background="@drawable/emotion_background2"
                 android:id="@+id/shocked">
                 <ImageButton
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
                     android:src="@drawable/ic_shocked"
                     android:background="@android:color/transparent"
                     android:layout_centerVertical="true"
                     android:scaleType="fitXY"
                     android:id="@+id/shocked_emoji"
-                    android:layout_marginStart="5dp"/>
+                    android:layout_marginStart="@dimen/_4sdp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -271,7 +271,7 @@
                     android:id="@+id/shocked_TV"
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@+id/shocked_emoji"
-                    android:layout_marginStart="5dp"/>
+                    android:layout_marginStart="@dimen/_4sdp"/>
 
             </RelativeLayout>
             <Space
@@ -279,19 +279,19 @@
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"/>
             <RelativeLayout
-                android:layout_width="95dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/_85sdp"
+                android:layout_height="@dimen/_35sdp"
                 android:background="@drawable/emotion_background2"
                 android:id="@+id/sick">
                 <ImageButton
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
                     android:src="@drawable/ic_sick"
                     android:background="@android:color/transparent"
                     android:layout_centerVertical="true"
                     android:scaleType="fitXY"
                     android:id="@+id/sick_emoji"
-                    android:layout_marginStart="5dp"/>
+                    android:layout_marginStart="@dimen/_4sdp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -300,7 +300,7 @@
                     android:id="@+id/sick_TV"
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@+id/sick_emoji"
-                    android:layout_marginStart="5dp"/>
+                    android:layout_marginStart="@dimen/_4sdp"/>
 
             </RelativeLayout>
             <Space
@@ -330,17 +330,18 @@
             android:textColor="@android:color/black"
             android:gravity="top"
             android:inputType="textMultiLine"
-            android:padding="10dp"
+            android:padding="@dimen/_8sdp"
+            android:textSize="@dimen/_13sdp"
             android:textAlignment="gravity"
             android:id="@+id/edittext"/>
             <RelativeLayout
-                android:layout_width="122dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/_115sdp"
+                android:layout_height="@dimen/_35sdp"
                 android:background="@drawable/button_background"
                 android:id="@+id/translate_btn"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
-                android:layout_margin="10dp"
+                android:layout_margin="@dimen/_8sdp"
                 >
                 <ImageView
                     android:layout_width="wrap_content"
@@ -348,7 +349,7 @@
                     android:src="@drawable/ic_baseline_translate_24"
                     android:layout_centerVertical="true"
                     android:id="@+id/translate_icon"
-                    android:layout_marginStart="10dp"/>
+                    android:layout_marginStart="@dimen/_8sdp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -356,8 +357,8 @@
                     android:textColor="@android:color/white"
                     android:layout_toEndOf="@+id/translate_icon"
                     android:layout_centerVertical="true"
-                    android:textSize="17sp"
-                    android:layout_marginStart="7.5dp"/>
+                    android:textSize="@dimen/_14sdp"
+                    android:layout_marginStart="@dimen/_7sdp"/>
             </RelativeLayout>
         </RelativeLayout>
         <EditText
@@ -367,9 +368,10 @@
             android:background="@drawable/bordered_backround"
             android:hint="@string/translated_text_will_be_displayed_here"
             android:textColor="@android:color/black"
+            android:textSize="@dimen/_13sdp"
             android:enabled="false"
             android:gravity="top"
-            android:padding="10dp"
+            android:padding="@dimen/_8sdp"
             android:textAlignment="gravity"
             android:id="@+id/edittext2"/>
     </LinearLayout>
@@ -380,26 +382,26 @@
         android:id="@+id/coins"
         android:layout_above="@+id/fabs"
         android:orientation="horizontal"
-        android:padding="5dp"
+        android:padding="@dimen/_4sdp"
         android:background="@drawable/button_background2"
         android:layout_alignParentEnd="true"
-        android:layout_margin="5dp"
+        android:layout_margin="@dimen/_4sdp"
         >
         <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="@dimen/_22sdp"
+            android:layout_height="@dimen/_22sdp"
             android:src="@drawable/coin"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/coins_tv"
             android:textColor="@android:color/white"
-            android:textSize="18sp"
+            android:textSize="@dimen/_13sdp"
             android:layout_gravity="center"
             />
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/_22sdp"
+            android:layout_height="@dimen/_22sdp"
             android:src="@drawable/ic_baseline_add_24"
             android:layout_gravity="center"/>
     </LinearLayout>
@@ -408,9 +410,9 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:id="@+id/fabs"
-        android:paddingTop="5dp"
+        android:paddingTop="@dimen/_4sdp"
         android:layout_alignParentBottom="true"
-        android:paddingBottom="5dp"
+        android:paddingBottom="@dimen/_4sdp"
         >
         <Space
             android:layout_weight="1"
@@ -420,7 +422,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_baseline_favorite_border_24"
-            app:maxImageSize="35dp"
+            app:maxImageSize="@dimen/_25sdp"
             android:padding="1dp"
             android:id="@+id/fab_favourites"
             tools:ignore="ContentDescription" />
@@ -433,7 +435,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_baseline_delete_outline_24"
-            app:maxImageSize="35dp"
+            app:maxImageSize="@dimen/_25sdp"
             android:padding="1dp"
             android:id="@+id/fab_delete"
             tools:ignore="ContentDescription" />
@@ -446,7 +448,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_baseline_mic_none_24"
-            app:maxImageSize="35dp"
+            app:maxImageSize="@dimen/_25sdp"
             android:padding="1dp"
             android:id="@+id/fab_mic"
             tools:ignore="ContentDescription" />
@@ -458,7 +460,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_baseline_volume_up_24"
-            app:maxImageSize="35dp"
+            app:maxImageSize="@dimen/_25sdp"
             android:padding="1dp"
             android:id="@+id/fab_speaker"
             tools:ignore="ContentDescription" />

@@ -12,15 +12,18 @@
         android:text="@string/no_videos_availbale_for_the_word"
         android:layout_centerInParent="true"
         android:gravity="center"
-        android:textSize="20sp"
+        android:textSize="@dimen/_18sdp"
         android:visibility="invisible"
         android:id="@+id/no_video_available_tv"/>
+    <include layout="@layout/toolbar_layout"
+        android:id="@+id/toolbar"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_margin="@dimen/_4sdp"
         android:background="@drawable/bordered_backround"
+        android:layout_below="@+id/toolbar"
         android:id="@+id/video_by_user_rv"/>
     
     <com.google.android.material.floatingactionbutton.FloatingActionButton

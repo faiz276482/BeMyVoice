@@ -92,4 +92,7 @@ dependencies {
 
     //scalable dp
     implementation 'com.intuit.sdp:sdp-android:1.0.6'
+
+    //VideoPlayer
+//    implementation 'com.github.HamidrezaAmz:MagicalExoPlayer:2.0.6'
 }

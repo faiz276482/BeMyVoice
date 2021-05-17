@@ -55,6 +55,7 @@ public class VideoDictionaryFragment extends Fragment {
         // Inflate the layout for this fragment
         view=inflater.inflate(R.layout.fragment_video_dictionary, container, false);
 //        database_Write();
+//        database_Write2();
         signLanguageSpinner=view.findViewById(R.id.sign_language_spinner);
         search_edittext=view.findViewById(R.id.search_edittext);
         result=view.findViewById(R.id.result);
@@ -209,4 +210,26 @@ public class VideoDictionaryFragment extends Fragment {
 //                    .set(new Video("default",0,0));
         }
     }
+	
+	void database_Write2()
+	{
+	    String[] data={"Abbreviation", "Abeyance", "About", "Above"};
+        for(int i=0;i<data.length;i++)
+        {
+            String coll_id="Words starting with "+data[i].charAt(0);
+            String name="Indian";
+
+            int finalI = i;
+            FirebaseFirestore.getInstance().collection("video_dictionary")
+                    .document(name+" Sign Language")
+                    .collection(coll_id)
+                    .document(data[i])
+                    .set(new MostLiked("default",0,"")).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    System.out.println(data[finalI]+" is written at ="+name+" Sign Language>"+coll_id+">"+data[finalI]);
+                }
+            });
+        }
+	}
 }

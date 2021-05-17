@@ -7,20 +7,20 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
+        android:textSize="@dimen/_16sdp"
         android:text="@string/sample"
-        android:padding="10dp"
-        android:layout_marginEnd="40dp"
+        android:padding="@dimen/_8sdp"
+        android:layout_marginEnd="@dimen/_35sdp"
         android:id="@+id/video_by_user_TextView"
         android:textColor="@android:color/black"
         />
     <ImageView
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
         android:src="@drawable/ic_arrow"
         android:scaleType="fitXY"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:id="@+id/arrow"
-        android:layout_marginEnd="10dp"/>
+        android:layout_marginEnd="@dimen/_8sdp"/>
 </RelativeLayout>

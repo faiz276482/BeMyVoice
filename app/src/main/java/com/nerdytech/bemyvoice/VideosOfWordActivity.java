@@ -3,6 +3,7 @@ package com.nerdytech.bemyvoice;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +38,8 @@ public class VideosOfWordActivity extends AppCompatActivity {
     String initial;
     String word;
     String meaning;
+    TextView title;
+    ImageView back;
     boolean userVideoAvailable=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,8 @@ public class VideosOfWordActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
         noVideoAvailabeTV=findViewById(R.id.no_video_available_tv);
+        title=findViewById(R.id.title);
+        back=findViewById(R.id.back);
 
         Intent intent=getIntent();
         word=intent.getStringExtra("word");
@@ -56,6 +61,13 @@ public class VideosOfWordActivity extends AppCompatActivity {
         initial = intent.getStringExtra("initials");
         System.out.println("saved sign language="+saved_sign_language);
         System.out.println("In VideosOfWordActivity\n"+saved_sign_language+"\n"+word+"\n"+meaning);
+        title.setText(String.format("Videos of the word %s", word));
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         CollectionReference colRef = FirebaseFirestore.getInstance().collection("video_dictionary").document(saved_sign_language)
                 .collection(initial).document(word).collection("video");

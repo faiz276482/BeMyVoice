@@ -26,7 +26,7 @@ public class WordsStartingWithInitialsAdapter extends RecyclerView.Adapter<Words
     List<String> words;
     String selectedLanguage;
     List<Word> wordData;
-    String pattern = "^[A-Za-z0-9. ]+$";
+    String pattern = "^[A-Za-z0-9.\\- ]+$";
     String initials;
 
 

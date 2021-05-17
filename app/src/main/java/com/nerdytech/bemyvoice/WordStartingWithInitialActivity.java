@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +33,8 @@ public class WordStartingWithInitialActivity extends AppCompatActivity {
     WordsStartingWithInitialsAdapter adapter;
     String initials;
     String saved_sign_language;
+    TextView title;
+    ImageView back;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,12 +42,22 @@ public class WordStartingWithInitialActivity extends AppCompatActivity {
         recyclerView=findViewById(R.id.word_with_initial_rv);
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+        title=findViewById(R.id.title);
+        back=findViewById(R.id.back);
+
 
         Intent intent=getIntent();
         initials=intent.getStringExtra("initials");
         saved_sign_language = intent.getStringExtra("saved_sign_language");
         System.out.println("saved sign language="+saved_sign_language);
         System.out.println("In WordStartingWithIntialActivity\n"+saved_sign_language+"\n"+initials);
+        title.setText(initials);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         CollectionReference colRef = FirebaseFirestore.getInstance().collection("video_dictionary").document(saved_sign_language)
                 .collection(initials);

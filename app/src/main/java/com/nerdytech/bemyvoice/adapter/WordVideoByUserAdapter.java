@@ -19,7 +19,7 @@ public class WordVideoByUserAdapter extends RecyclerView.Adapter<WordVideoByUser
     Context mContext;
     String selectedLanguage;
     List<Video> videoData;
-    String pattern = "^[A-Za-z0-9. ]+$";
+    String pattern = "^[A-Za-z0-9.\\- ]+$";
 
 
     public WordVideoByUserAdapter(Context mContext, List<Video> videoData,String selectedLanguage) {

@@ -13,13 +13,13 @@
         <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="@dimen/_8sdp"
         android:background="@drawable/bordered_backround"
         android:id="@+id/sign_language_spinner"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
+            android:layout_marginEnd="@dimen/_13sdp"
             android:layout_alignParentEnd="true"
             android:src="@drawable/ic_baseline_arrow_drop_down_24"
             android:layout_centerVertical="true"/>
@@ -29,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/spinner_rv"
-        android:layout_margin="15dp"
+        android:layout_margin="@dimen/_13sdp"
         android:id="@+id/search_and_add">
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -42,11 +42,11 @@
                 android:hint="@string/search_word"
                 android:textAllCaps="false"
                 android:inputType="text"
-                android:textSize="20sp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:paddingEnd="5dp"
-                android:paddingStart="29dp"
+                android:textSize="@dimen/_16sdp"
+                android:paddingTop="@dimen/_4sdp"
+                android:paddingBottom="@dimen/_4sdp"
+                android:paddingEnd="@dimen/_4sdp"
+                android:paddingStart="@dimen/_26sdp"
                 android:id="@+id/search_edittext"
                 android:textColor="@android:color/black"/>
             <ImageView
@@ -62,29 +62,29 @@
             android:id="@+id/button_rv"
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/search_rv"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="@dimen/_8sdp">
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/emotion_background"
                 android:text="@string/search"
                 android:id="@+id/search_btn"
-                android:textSize="17sp"
+                android:textSize="@dimen/_15sdp"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:padding="10dp"/>
+                android:padding="@dimen/_8sdp"/>
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/emotion_background"
                 android:layout_toEndOf="@+id/search_btn"
-                android:layout_marginStart="25dp"
+                android:layout_marginStart="@dimen/_22sdp"
                 android:text="@string/add_word"
                 android:id="@+id/add_word_btn"
-                android:textSize="17sp"
+                android:textSize="@dimen/_15sdp"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:padding="10dp"/>
+                android:padding="@dimen/_8sdp"/>
         </RelativeLayout>
 
     </RelativeLayout>
@@ -94,7 +94,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/search_and_add"
         android:id="@+id/result"
-        android:layout_margin="15dp"
+        android:layout_margin="@dimen/_13sdp"
         android:scrollbars="vertical"
         android:scrollbarDefaultDelayBeforeFade="5000"
         android:scrollbarStyle="outsideOverlay"

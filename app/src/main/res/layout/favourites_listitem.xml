@@ -8,20 +8,20 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
+        android:textSize="@dimen/_20sdp"
         android:text="@string/sample"
-        android:padding="10dp"
-        android:layout_marginEnd="40dp"
+        android:padding="@dimen/_8sdp"
+        android:layout_marginEnd="@dimen/_35sdp"
         android:id="@+id/favourites_TextView"
         android:textColor="@android:color/black"
         />
     <ImageView
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/_27sdp"
+        android:layout_height="@dimen/_27sdp"
         android:src="@drawable/ic_delete"
         android:scaleType="fitXY"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:id="@+id/delete"
-        android:layout_marginEnd="10dp"/>
+        android:layout_marginEnd="@dimen/_8sdp"/>
 </RelativeLayout>

@@ -15,7 +15,8 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode">
         <activity android:name=".VideoEditAndUploadActivity" />
         <activity android:name=".VideosOfWordActivity" />
         <activity android:name=".WordStartingWithInitialActivity" />
