@@ -213,11 +213,11 @@ public class VideoDictionaryFragment extends Fragment {
 	
 	void database_Write2()
 	{
-	    String[] data={"Abbreviation", "Abeyance", "About", "Above"};
+	    String[] data={"A-lot", "Abdomen", "About"};
         for(int i=0;i<data.length;i++)
         {
             String coll_id="Words starting with "+data[i].charAt(0);
-            String name="Indian";
+            String name="American";
 
             int finalI = i;
             FirebaseFirestore.getInstance().collection("video_dictionary")

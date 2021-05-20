@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -127,16 +128,21 @@ public class ProfileFragment extends Fragment {
                     // [END config_signin]
 
                     mGoogleSignInClient = GoogleSignIn.getClient(view.getContext(), gso);
-                    mGoogleSignInClient.signOut();
+                    mGoogleSignInClient.signOut().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Intent intent=new Intent(getContext(), LoginActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            getActivity().finishAffinity();
+                        }
+                    });
                 }
                 catch (Exception e)
                 {
                     Log.i("Logout",e.getMessage());
                 }
-                Intent intent=new Intent(getContext(), LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                getActivity().finish();
+
             }
         });
         return view;

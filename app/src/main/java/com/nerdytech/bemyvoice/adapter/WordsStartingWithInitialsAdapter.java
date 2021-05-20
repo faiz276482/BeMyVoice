@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.nerdytech.bemyvoice.R;
 import com.nerdytech.bemyvoice.VideosOfWordActivity;
-import com.nerdytech.bemyvoice.model.android.Word;
+import com.nerdytech.bemyvoice.model.Word;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class WordsStartingWithInitialsAdapter extends RecyclerView.Adapter<Words
     List<String> words;
     String selectedLanguage;
     List<Word> wordData;
-    String pattern = "^[A-Za-z0-9.\\- ]+$";
+    String pattern = "^[A-Za-z0-9.\\-():',+/ ]+$";
     String initials;
 
 

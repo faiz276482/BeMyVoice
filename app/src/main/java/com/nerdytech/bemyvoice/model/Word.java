@@ -1,4 +1,4 @@
-package com.nerdytech.bemyvoice.model.android;
+package com.nerdytech.bemyvoice.model;
 
 public class Word {
     String meaning;

@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -20,7 +21,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.nerdytech.bemyvoice.adapter.WordVideoByUserAdapter;
+import com.nerdytech.bemyvoice.adapter.WordVideoByUsersAdapter;
 import com.nerdytech.bemyvoice.model.Video;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 public class VideosOfWordActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
-    WordVideoByUserAdapter adapter;
+    WordVideoByUsersAdapter adapter;
     TextView noVideoAvailabeTV;
     FloatingActionButton add_video;
     String saved_sign_language;
@@ -61,7 +62,7 @@ public class VideosOfWordActivity extends AppCompatActivity {
         initial = intent.getStringExtra("initials");
         System.out.println("saved sign language="+saved_sign_language);
         System.out.println("In VideosOfWordActivity\n"+saved_sign_language+"\n"+word+"\n"+meaning);
-        title.setText(String.format("Videos of the word %s", word));
+        title.setText(String.format("Videos of %s", word));
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,12 +72,14 @@ public class VideosOfWordActivity extends AppCompatActivity {
 
         CollectionReference colRef = FirebaseFirestore.getInstance().collection("video_dictionary").document(saved_sign_language)
                 .collection(initial).document(word).collection("video");
-        colRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        colRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<Video> videoData=new ArrayList<>();
-                for (DocumentSnapshot document : value.getDocuments()) {
+                List<String> uid=new ArrayList<>();
+                for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
                     videoData.add(document.toObject(Video.class));
+                    uid.add(document.getId());
                     if(document.getId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
                     {
                         userVideoAvailable=true;
@@ -84,7 +87,7 @@ public class VideosOfWordActivity extends AppCompatActivity {
                 }
                 if(videoData.size()>0) {
                     noVideoAvailabeTV.setVisibility(View.INVISIBLE);
-                    adapter = new WordVideoByUserAdapter(getBaseContext(), videoData, saved_sign_language);
+                    adapter = new WordVideoByUsersAdapter(getBaseContext(), videoData, uid,saved_sign_language,word,initial,meaning);
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
                 }
@@ -95,6 +98,12 @@ public class VideosOfWordActivity extends AppCompatActivity {
                 }
             }
         });
+//        colRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+//
+//            }
+//        });
 
         add_video.setOnClickListener(new View.OnClickListener() {
             @Override

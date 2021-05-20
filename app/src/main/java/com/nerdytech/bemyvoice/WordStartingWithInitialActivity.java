@@ -1,8 +1,6 @@
 package com.nerdytech.bemyvoice;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,11 +19,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.nerdytech.bemyvoice.adapter.WordsStartingWithInitialsAdapter;
-import com.nerdytech.bemyvoice.model.android.Word;
+import com.nerdytech.bemyvoice.model.Word;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class WordStartingWithInitialActivity extends AppCompatActivity {
 
