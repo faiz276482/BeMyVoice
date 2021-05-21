@@ -40,7 +40,7 @@ public class WordVideoByUsersAdapter extends RecyclerView.Adapter<WordVideoByUse
     String pattern = "^[A-Za-z0-9.\\-():',+/ ]+$";
 
 
-    public WordVideoByUsersAdapter(Context mContext, List<Video> videoData, List<String> uid,String saved_sign_language,String word,String initial,String meaning) {
+    public WordVideoByUsersAdapter(Context mContext, List<Video> videoData, List<String> uid,String saved_sign_language,String word,String initial,String meaning,String most_liked,int maxVotes) {
         this.mContext = mContext;
         this.videoData=videoData;
         this.saved_sign_language=saved_sign_language;
@@ -48,6 +48,8 @@ public class WordVideoByUsersAdapter extends RecyclerView.Adapter<WordVideoByUse
         this.word=word;
         this.meaning=meaning;
         this.initial=initial;
+        this.most_liked=most_liked;
+        this.maxVotes=maxVotes;
     }
 
 
@@ -65,15 +67,16 @@ public class WordVideoByUsersAdapter extends RecyclerView.Adapter<WordVideoByUse
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseFirestore.getInstance().collection("video_dictionary").document(saved_sign_language)
-                        .collection(initial).document(word).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Word word=documentSnapshot.toObject(Word.class);
-                        maxVotes=word.getVotes();
-                        most_liked=word.getMost_liked();
-                    }
-                });
+//                FirebaseFirestore.getInstance().collection("video_dictionary").document(saved_sign_language)
+//                        .collection(initial).document(word).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                        Word word=documentSnapshot.toObject(Word.class);
+//                        maxVotes=word.getVotes();
+//                        most_liked=word.getMost_liked();
+//                        System.out.println("maxVotes:"+maxVotes+"\nmost_like:"+most_liked);
+//                    }
+//                });
                 mContext.startActivity(new Intent(mContext, WordVideoViewActivity.class)
                         .addFlags(FLAG_ACTIVITY_NEW_TASK )
                         .putExtra("saved_sign_language", saved_sign_language)
@@ -83,7 +86,7 @@ public class WordVideoByUsersAdapter extends RecyclerView.Adapter<WordVideoByUse
                         .putExtra("username",videoData.get(position).getAuthor())
                         .putExtra("uid",uid.get(position))
                         .putExtra("maxVotes",maxVotes).putExtra("most_liked",most_liked));
-//                finish();
+//                ((VideosOfWordActivity)mContext).finish();
             }
         });
     }

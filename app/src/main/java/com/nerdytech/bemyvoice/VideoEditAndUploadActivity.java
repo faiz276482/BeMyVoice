@@ -67,6 +67,9 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
     Uri uri;
     String url;
 
+    int maxVotes;
+    String most_liked;
+
     private MediaController mediaController;
 
     private int trimType;
@@ -93,6 +96,8 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
         saved_sign_language = intent.getStringExtra("saved_sign_language");
         meaning = intent.getStringExtra("meaning");
         initial = intent.getStringExtra("initials");
+        maxVotes=intent.getIntExtra("maxVotes",0);
+        most_liked=intent.getStringExtra("most_liked");
         System.out.println("saved sign language=" + saved_sign_language);
         System.out.println("In "+TAG+":\t" + saved_sign_language + ":\t" + word + ":\t" + meaning);
         sRef= FirebaseStorage.getInstance().getReference().child("videos")
@@ -144,7 +149,8 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
                 .putExtra("saved_sign_language", saved_sign_language)
                 .putExtra("word", word)
                 .putExtra("initials", initial)
-                .putExtra("meaning", meaning));
+                .putExtra("meaning", meaning)
+                .putExtra("maxVotes",maxVotes).putExtra("most_liked",most_liked));
         finish();
     }
 

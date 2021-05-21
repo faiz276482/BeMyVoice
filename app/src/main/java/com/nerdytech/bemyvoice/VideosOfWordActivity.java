@@ -41,6 +41,9 @@ public class VideosOfWordActivity extends AppCompatActivity {
     String meaning;
     TextView title;
     ImageView back;
+
+    int maxVotes;
+    String most_liked;
     boolean userVideoAvailable=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +63,10 @@ public class VideosOfWordActivity extends AppCompatActivity {
         saved_sign_language = intent.getStringExtra("saved_sign_language");
         meaning = intent.getStringExtra("meaning");
         initial = intent.getStringExtra("initials");
+        maxVotes=intent.getIntExtra("maxVotes",0);
+        most_liked=intent.getStringExtra("most_liked");
         System.out.println("saved sign language="+saved_sign_language);
-        System.out.println("In VideosOfWordActivity\n"+saved_sign_language+"\n"+word+"\n"+meaning);
+        System.out.println("In VideosOfWordActivity\n"+saved_sign_language+"\n"+word+"\n"+meaning+"\n"+maxVotes+"\n"+most_liked);
         title.setText(String.format("Videos of %s", word));
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,7 +92,7 @@ public class VideosOfWordActivity extends AppCompatActivity {
                 }
                 if(videoData.size()>0) {
                     noVideoAvailabeTV.setVisibility(View.INVISIBLE);
-                    adapter = new WordVideoByUsersAdapter(getBaseContext(), videoData, uid,saved_sign_language,word,initial,meaning);
+                    adapter = new WordVideoByUsersAdapter(getBaseContext(), videoData, uid,saved_sign_language,word,initial,meaning,most_liked,maxVotes);
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
                 }
@@ -118,7 +123,8 @@ public class VideosOfWordActivity extends AppCompatActivity {
                             .putExtra("saved_sign_language", saved_sign_language)
                             .putExtra("word", word)
                             .putExtra("initials", initial)
-                            .putExtra("meaning", meaning));
+                            .putExtra("meaning", meaning)
+                            .putExtra("maxVotes",maxVotes).putExtra("most_liked",most_liked));
                 }
             }
         });

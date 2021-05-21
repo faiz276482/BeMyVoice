@@ -32,6 +32,8 @@ public class WordStartingWithInitialActivity extends AppCompatActivity {
     String saved_sign_language;
     TextView title;
     ImageView back;
+    int maxVotes;
+    String most_liked;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

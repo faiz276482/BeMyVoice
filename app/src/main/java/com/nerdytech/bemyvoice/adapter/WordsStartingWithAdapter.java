@@ -51,6 +51,7 @@ public class WordsStartingWithAdapter extends RecyclerView.Adapter<WordsStarting
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 mContext.startActivity(new Intent(mContext, WordStartingWithInitialActivity.class).putExtra("saved_sign_language",selectedLanguage)
                         .putExtra("initials",holder.initiatlsTextView.getText().toString())
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP));

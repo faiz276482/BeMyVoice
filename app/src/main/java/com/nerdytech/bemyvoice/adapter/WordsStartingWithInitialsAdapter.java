@@ -11,6 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.nerdytech.bemyvoice.R;
 import com.nerdytech.bemyvoice.VideosOfWordActivity;
 import com.nerdytech.bemyvoice.model.Word;
@@ -28,6 +31,8 @@ public class WordsStartingWithInitialsAdapter extends RecyclerView.Adapter<Words
     List<Word> wordData;
     String pattern = "^[A-Za-z0-9.\\-():',+/ ]+$";
     String initials;
+    int maxVotes;
+    String most_liked;
 
 
     public WordsStartingWithInitialsAdapter(Context mContext,List<String> words, List<Word> wordData,String initials,String selectedLanguage) {
@@ -59,12 +64,24 @@ public class WordsStartingWithInitialsAdapter extends RecyclerView.Adapter<Words
             @Override
             public void onClick(View v) {
 //                Log.i("meaning",wordData.get(position).getMeaning());
-                mContext.startActivity(new Intent(mContext, VideosOfWordActivity.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|FLAG_ACTIVITY_NEW_TASK)
-                        .putExtra("saved_sign_language",selectedLanguage)
-                        .putExtra("word",words.get(position))
-                        .putExtra("initials",initials)
-                        .putExtra("meaning",wordData.get(position).getMeaning()));
+                FirebaseFirestore.getInstance().collection("video_dictionary").document(selectedLanguage)
+                        .collection(initials).document(words.get(position)).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Word word=documentSnapshot.toObject(Word.class);
+                        maxVotes=word.getVotes();
+                        most_liked=word.getMost_liked();
+                        System.out.println("maxVotes:"+maxVotes+"\nmost_like:"+most_liked);
+                        mContext.startActivity(new Intent(mContext, VideosOfWordActivity.class)
+                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|FLAG_ACTIVITY_NEW_TASK)
+                                .putExtra("saved_sign_language",selectedLanguage)
+                                .putExtra("word",words.get(position))
+                                .putExtra("initials",initials)
+                                .putExtra("meaning",wordData.get(position).getMeaning())
+                                .putExtra("maxVotes",maxVotes).putExtra("most_liked",most_liked));
+                    }
+                });
+
             }
         });
     }
