@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -70,10 +71,13 @@ public class WordVideoViewActivity extends AppCompatActivity {
     int maxVotes;
     String most_liked;
     String maxVoteVideo;
+    String search_string;
     boolean notVoted=true,upVoteState=false,downVoteState=false;
     Video video;
 
     StorageReference storageReference;
+
+    ProgressDialog progressDialog;
 
 
 
@@ -104,6 +108,7 @@ public class WordVideoViewActivity extends AppCompatActivity {
         videoByUid=intent.getStringExtra("uid");
         most_liked=intent.getStringExtra("most_liked");
         maxVotes=intent.getIntExtra("maxVotes",0);
+        search_string=intent.getStringExtra("searchString");
 
         title.setText(String.format("%s video by %s", word, videoByUsername));
         back.setOnClickListener(new View.OnClickListener() {
@@ -114,7 +119,7 @@ public class WordVideoViewActivity extends AppCompatActivity {
         });
 
 //        System.out.println("saved sign language=" + saved_sign_language);
-        System.out.println("In "+TAG+":\t" + saved_sign_language + "\t" + word + "\t" + meaning +"\t"+ videoByUsername+ "\t"+ videoByUid+"\t"+maxVotes+"\t"+most_liked);
+        System.out.println("In "+TAG+":\t" + saved_sign_language + "\t" + word + "\t" + meaning +"\t"+ videoByUsername+ "\t"+ videoByUid+"\t"+maxVotes+"\t"+most_liked+"\n"+search_string);
 
 
 
@@ -125,7 +130,7 @@ public class WordVideoViewActivity extends AppCompatActivity {
                 .collection("video")
                 .document(videoByUid);
 
-
+        progressDialog = ProgressDialog.show(WordVideoViewActivity.this,"Loading video","Please Wait!");
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @SuppressLint("DefaultLocale")
             @Override
@@ -169,6 +174,7 @@ public class WordVideoViewActivity extends AppCompatActivity {
                                 notVoted=false;
                             }
                         }
+
                     }
                 });
                 upvoteCount= video.getUpvotes();
@@ -182,6 +188,7 @@ public class WordVideoViewActivity extends AppCompatActivity {
                 videoView.start();
                 videoView.setOnPreparedListener(mediaPlayer -> {
                     mediaController.setAnchorView(videoView);
+                    progressDialog.dismiss();
                 });
 //                System.out.println(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
@@ -383,7 +390,9 @@ public class WordVideoViewActivity extends AppCompatActivity {
                 .putExtra("meaning", meaning)
                 .putExtra("username",videoByUsername)
                 .putExtra("uid",videoByUid)
-                .putExtra("maxVotes",maxVotes).putExtra("most_liked",most_liked));
+                .putExtra("maxVotes",maxVotes)
+                .putExtra("most_liked",most_liked)
+                .putExtra("searchString",search_string));
         finish();
 
     }

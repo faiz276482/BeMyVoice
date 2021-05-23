@@ -1,6 +1,7 @@
 package com.nerdytech.bemyvoice.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -9,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +29,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.nerdytech.bemyvoice.MainActivity;
 import com.nerdytech.bemyvoice.R;
+import com.nerdytech.bemyvoice.WordStartingWithInitialActivity;
+import com.nerdytech.bemyvoice.WordsContaingSearchStringActivity;
 import com.nerdytech.bemyvoice.adapter.WordsStartingWithAdapter;
 import com.nerdytech.bemyvoice.model.MostLiked;
 
@@ -158,6 +163,22 @@ public class VideoDictionaryFragment extends Fragment {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
+            }
+        });
+
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(TextUtils.isEmpty(search_edittext.getText()))
+                {
+                    Toast.makeText(getContext(), "PLease enter a text int the search bar", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    startActivity(new Intent(getContext(), WordsContaingSearchStringActivity.class)
+                    .putExtra("searchString",search_edittext.getText().toString())
+                    .putExtra("initials","Words starting with  "));
+                    ((MainActivity)getContext()).finish();
+                }
             }
         });
         return view;

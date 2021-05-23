@@ -92,4 +92,5 @@
     <string name="reset_pitch_speed"><![CDATA[Reset Pitch & Speed]]></string>
     <string name="upvotes">Upvotes</string>
     <string name="downvotes">Downvotes</string>
+    <string name="no_words_found_containg_search_string">No words found containing </string>
 </resources>

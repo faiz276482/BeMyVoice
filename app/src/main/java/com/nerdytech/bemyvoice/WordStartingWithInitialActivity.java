@@ -70,7 +70,7 @@ public class WordStartingWithInitialActivity extends AppCompatActivity {
                         words.add(document.getId());
                         wordData.add(document.toObject(Word.class));
                     }
-                    adapter = new WordsStartingWithInitialsAdapter(getBaseContext(),words,wordData,initials,saved_sign_language);
+                    adapter = new WordsStartingWithInitialsAdapter(getBaseContext(),words,wordData,initials,saved_sign_language,null);
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
                     Log.d("fetched words", words.toString());

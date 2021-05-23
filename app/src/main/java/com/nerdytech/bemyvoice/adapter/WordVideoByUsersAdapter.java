@@ -37,10 +37,11 @@ public class WordVideoByUsersAdapter extends RecyclerView.Adapter<WordVideoByUse
     String meaning;
     int maxVotes;
     String most_liked;
+    String search_string;
     String pattern = "^[A-Za-z0-9.\\-():',+/ ]+$";
 
 
-    public WordVideoByUsersAdapter(Context mContext, List<Video> videoData, List<String> uid,String saved_sign_language,String word,String initial,String meaning,String most_liked,int maxVotes) {
+    public WordVideoByUsersAdapter(Context mContext, List<Video> videoData, List<String> uid,String saved_sign_language,String word,String initial,String meaning,String most_liked,int maxVotes,String search_string) {
         this.mContext = mContext;
         this.videoData=videoData;
         this.saved_sign_language=saved_sign_language;
@@ -50,6 +51,7 @@ public class WordVideoByUsersAdapter extends RecyclerView.Adapter<WordVideoByUse
         this.initial=initial;
         this.most_liked=most_liked;
         this.maxVotes=maxVotes;
+        this.search_string=search_string;
     }
 
 
@@ -85,7 +87,9 @@ public class WordVideoByUsersAdapter extends RecyclerView.Adapter<WordVideoByUse
                         .putExtra("meaning", meaning)
                         .putExtra("username",videoData.get(position).getAuthor())
                         .putExtra("uid",uid.get(position))
-                        .putExtra("maxVotes",maxVotes).putExtra("most_liked",most_liked));
+                        .putExtra("maxVotes",maxVotes)
+                        .putExtra("most_liked",most_liked)
+                        .putExtra("searchString",search_string));
 //                ((VideosOfWordActivity)mContext).finish();
             }
         });

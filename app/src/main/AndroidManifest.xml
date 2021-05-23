@@ -17,7 +17,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".WordVideoViewActivity"></activity>
+        <activity android:name=".WordsContaingSearchStringActivity"></activity>
+        <activity android:name=".WordVideoViewActivity" />
         <activity android:name=".VideoEditAndUploadActivity" />
         <activity android:name=".VideosOfWordActivity" />
         <activity android:name=".WordStartingWithInitialActivity" />

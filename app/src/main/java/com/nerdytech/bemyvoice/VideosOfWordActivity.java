@@ -39,6 +39,7 @@ public class VideosOfWordActivity extends AppCompatActivity {
     String initial;
     String word;
     String meaning;
+    String search_string;
     TextView title;
     ImageView back;
 
@@ -65,8 +66,9 @@ public class VideosOfWordActivity extends AppCompatActivity {
         initial = intent.getStringExtra("initials");
         maxVotes=intent.getIntExtra("maxVotes",0);
         most_liked=intent.getStringExtra("most_liked");
+        search_string=intent.getStringExtra("searchString");
         System.out.println("saved sign language="+saved_sign_language);
-        System.out.println("In VideosOfWordActivity\n"+saved_sign_language+"\n"+word+"\n"+meaning+"\n"+maxVotes+"\n"+most_liked);
+        System.out.println("In VideosOfWordActivity\n"+saved_sign_language+"\n"+initial+"\n"+word+"\n"+meaning+"\n"+maxVotes+"\n"+most_liked+"\n"+search_string);
         title.setText(String.format("Videos of %s", word));
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +94,7 @@ public class VideosOfWordActivity extends AppCompatActivity {
                 }
                 if(videoData.size()>0) {
                     noVideoAvailabeTV.setVisibility(View.INVISIBLE);
-                    adapter = new WordVideoByUsersAdapter(getBaseContext(), videoData, uid,saved_sign_language,word,initial,meaning,most_liked,maxVotes);
+                    adapter = new WordVideoByUsersAdapter(getBaseContext(), videoData, uid,saved_sign_language,word,initial,meaning,most_liked,maxVotes,search_string);
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
                 }
@@ -124,7 +126,8 @@ public class VideosOfWordActivity extends AppCompatActivity {
                             .putExtra("word", word)
                             .putExtra("initials", initial)
                             .putExtra("meaning", meaning)
-                            .putExtra("maxVotes",maxVotes).putExtra("most_liked",most_liked));
+                            .putExtra("maxVotes",maxVotes)
+                            .putExtra("most_liked",most_liked));
                 }
             }
         });
@@ -148,10 +151,20 @@ public class VideosOfWordActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        startActivity(new Intent(VideosOfWordActivity.this,WordStartingWithInitialActivity.class)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                .putExtra("saved_sign_language",saved_sign_language)
-                .putExtra("initials",initial));
-        finish();
+        if(search_string==null) {
+            startActivity(new Intent(VideosOfWordActivity.this, WordStartingWithInitialActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    .putExtra("saved_sign_language", saved_sign_language)
+                    .putExtra("initials", initial));
+            finish();
+        }
+        else {
+            startActivity(new Intent(VideosOfWordActivity.this, WordsContaingSearchStringActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    .putExtra("saved_sign_language", saved_sign_language)
+                    .putExtra("initials", initial)
+                    .putExtra("searchString",search_string));
+            finish();
+        }
     }
 }
