@@ -1,3 +1,4 @@
 /build
 /src/main/res/raw/credentials.json
 /src/main/java/com/nerdytech/bemyvoice/CloudTextToSpeech/Google_API.java
+/src/main/res/values/ad_mob_id.xml

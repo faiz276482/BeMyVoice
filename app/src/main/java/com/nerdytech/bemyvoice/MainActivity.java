@@ -9,6 +9,11 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
@@ -57,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseUser mUser;
     private String TAG="MainActivity";
     String PreferenceKey="beMyVoice";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

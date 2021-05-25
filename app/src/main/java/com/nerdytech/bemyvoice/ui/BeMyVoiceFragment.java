@@ -32,6 +32,11 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -97,6 +102,7 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
 //    TextToSpeech t1,t2;
     private static final int REQ_CODE_SPEECH_INPUT = 100;
     FirebaseAuth mAuth;
+    private AdView mAdView;
 
 
     @Override
@@ -105,6 +111,17 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
         // Inflate the layout for this fragment
         view=inflater.inflate(R.layout.fragment_be_my_voice, container, false);
         mAuth=FirebaseAuth.getInstance();
+
+        MobileAds.initialize(getContext(), new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+
+        mAdView = view.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
         inputToTranslate=view.findViewById(R.id.edittext);
         translatedTv=view.findViewById(R.id.edittext2);
         neutral=view.findViewById(R.id.neutral);

@@ -410,9 +410,10 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:id="@+id/fabs"
+        android:layout_above="@+id/adView"
         android:paddingTop="@dimen/_4sdp"
-        android:layout_alignParentBottom="true"
         android:paddingBottom="@dimen/_4sdp"
+        android:background="@drawable/bordered_backround"
         >
         <Space
             android:layout_weight="1"
@@ -469,4 +470,14 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"/>
     </LinearLayout>
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/banner_ad_id">
+    </com.google.android.gms.ads.AdView>
 </RelativeLayout>

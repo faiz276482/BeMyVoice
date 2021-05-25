@@ -21,6 +21,11 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -53,6 +58,8 @@ public class VideoDictionaryFragment extends Fragment {
     ArrayList<String > resultArray;
     String PreferenceKey="beMyVoice";
 
+    private AdView mAdView;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,6 +68,17 @@ public class VideoDictionaryFragment extends Fragment {
         view=inflater.inflate(R.layout.fragment_video_dictionary, container, false);
 //        database_Write();
 //        database_Write2();
+
+        MobileAds.initialize(getContext(), new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+
+        mAdView = view.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
         signLanguageSpinner=view.findViewById(R.id.sign_language_spinner);
         search_edittext=view.findViewById(R.id.search_edittext);
         result=view.findViewById(R.id.result);

@@ -7,21 +7,26 @@
 
     tools:context=".VideoEditAndUploadActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:layout_above="@+id/adView"
+        android:layout_alignParentTop="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
-        <androidx.core.widget.NestedScrollView style="@style/VView">
+            <androidx.core.widget.NestedScrollView style="@style/VView">
 
-            <LinearLayout style="@style/VView">
+                <LinearLayout style="@style/VView">
 
-                <VideoView
-                    android:id="@+id/video_view"
-                    android:layout_gravity="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_280sdp" />
+                    <VideoView
+                        android:id="@+id/video_view"
+                        android:layout_gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_280sdp" />
 
 
                     <Button
@@ -49,34 +54,48 @@
 
 
 
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
-    </LinearLayout>
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </LinearLayout>
 
-    <RelativeLayout
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center">
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="@dimen/_150sdp"
+                android:layout_height="@dimen/_150sdp"
+                android:visibility="invisible"
+                android:min="0"
+                android:progress="0"
+                android:max="100"/>
+            <TextView
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar_tv"
+                android:layout_width="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="invisible"
+                android:text="45%"
+                android:textColor="@color/colorAccent"
+                android:textSize="@dimen/_25sdp" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_gravity="center">
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="@dimen/_150sdp"
-            android:layout_height="@dimen/_150sdp"
-            android:visibility="invisible"
-            android:min="0"
-            android:progress="0"
-            android:max="100"/>
-        <TextView
-            android:layout_height="wrap_content"
-            android:id="@+id/progressBar_tv"
-            android:layout_width="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="invisible"
-            android:text="45%"
-            android:textColor="@color/colorAccent"
-            android:textSize="@dimen/_25sdp" />
-    </RelativeLayout>
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/banner_ad_id">
+    </com.google.android.gms.ads.AdView>
 
 
 </RelativeLayout>

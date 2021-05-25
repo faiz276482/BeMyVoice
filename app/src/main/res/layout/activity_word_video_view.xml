@@ -5,64 +5,81 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".WordVideoViewActivity">
-    <include layout="@layout/toolbar_layout"
-        android:id="@+id/toolbar"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_below="@+id/toolbar"
-        android:gravity="center_horizontal">
+        android:layout_above="@+id/adView"
+        android:layout_alignParentTop="true">
+        <include layout="@layout/toolbar_layout"
+            android:id="@+id/toolbar"/>
 
-        <androidx.core.widget.NestedScrollView style="@style/VView">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@+id/toolbar"
+            android:gravity="center_horizontal">
 
-            <LinearLayout style="@style/VView">
+            <androidx.core.widget.NestedScrollView style="@style/VView">
 
-                <VideoView
-                    android:id="@+id/video_view"
-                    android:layout_gravity="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_280sdp" />
+                <LinearLayout style="@style/VView">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <Button
-                        android:id="@+id/btn_upvotes"
-                        android:layout_width="@dimen/_120sdp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/_13sdp"
-                        android:background="@drawable/emotion_background2"
-                        android:textAllCaps="false"
+                    <VideoView
+                        android:id="@+id/video_view"
                         android:layout_gravity="center"
-                        android:textColor="@color/colorBlack"
-                        android:enabled="false"
-                        android:text="@string/upvotes" />
-                    <Space
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_width="0dp"/>
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_280sdp" />
 
-                    <Button
-                        android:id="@+id/btn_downvotes"
-                        android:layout_width="@dimen/_120sdp"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/_13sdp"
-                        android:background="@drawable/emotion_background2"
-                        android:textAllCaps="false"
-                        android:layout_gravity="center"
-                        android:enabled="false"
-                        android:textColor="@color/colorBlack"
-                        android:text="@string/downvotes" />
+                        android:orientation="horizontal">
+                        <Button
+                            android:id="@+id/btn_upvotes"
+                            android:layout_width="@dimen/_120sdp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/_13sdp"
+                            android:background="@drawable/emotion_background2"
+                            android:textAllCaps="false"
+                            android:layout_gravity="center"
+                            android:textColor="@color/colorBlack"
+                            android:enabled="false"
+                            android:text="@string/upvotes" />
+                        <Space
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"/>
+
+                        <Button
+                            android:id="@+id/btn_downvotes"
+                            android:layout_width="@dimen/_120sdp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/_13sdp"
+                            android:background="@drawable/emotion_background2"
+                            android:textAllCaps="false"
+                            android:layout_gravity="center"
+                            android:enabled="false"
+                            android:textColor="@color/colorBlack"
+                            android:text="@string/downvotes" />
+
+                    </LinearLayout>
+
+
 
                 </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </LinearLayout>
+    </RelativeLayout>
 
-
-
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
-    </LinearLayout>
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/banner_ad_id">
+    </com.google.android.gms.ads.AdView>
 
 </RelativeLayout>

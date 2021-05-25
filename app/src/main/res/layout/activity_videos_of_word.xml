@@ -5,36 +5,52 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".VideosOfWordActivity">
-
-    <TextView
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/no_videos_availbale_for_the_word"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:textSize="@dimen/_18sdp"
-        android:visibility="invisible"
-        android:id="@+id/no_video_available_tv"/>
-    <include layout="@layout/toolbar_layout"
-        android:id="@+id/toolbar"/>
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/adView">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_videos_availbale_for_the_word"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:textSize="@dimen/_18sdp"
+            android:visibility="invisible"
+            android:id="@+id/no_video_available_tv"/>
+        <include layout="@layout/toolbar_layout"
+            android:id="@+id/toolbar"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_4sdp"
+            android:background="@drawable/bordered_backround"
+            android:layout_below="@+id/toolbar"
+            android:id="@+id/video_by_user_rv"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_50sdp"
+            android:src="@drawable/ic_baseline_video_call_24"
+            android:scaleType="fitCenter"
+            app:maxImageSize="@dimen/_25sdp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="@dimen/_15sdp"
+            android:id="@+id/add_video"/>
+    </RelativeLayout>
+
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_4sdp"
-        android:background="@drawable/bordered_backround"
-        android:layout_below="@+id/toolbar"
-        android:id="@+id/video_by_user_rv"/>
-    
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_50sdp"
-        android:src="@drawable/ic_baseline_video_call_24"
-        android:scaleType="fitCenter"
-        app:maxImageSize="@dimen/_25sdp"
+        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="@dimen/_15sdp"
-        android:id="@+id/add_video"/>
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/banner_ad_id">
+    </com.google.android.gms.ads.AdView>
 
 </RelativeLayout>

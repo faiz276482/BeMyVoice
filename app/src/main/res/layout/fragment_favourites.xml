@@ -8,6 +8,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/adView"
+        android:background="@drawable/bordered_backround"
+        android:layout_alignParentTop="true"
         android:id="@+id/favourites_recycler_view"/>
     <TextView
         android:layout_width="wrap_content"
@@ -22,12 +25,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/coins"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/adView"
         android:orientation="horizontal"
         android:padding="@dimen/_4sdp"
         android:background="@drawable/button_background2"
         android:layout_alignParentEnd="true"
-        android:layout_margin="@dimen/_4sdp"
+        android:layout_margin="@dimen/_5sdp"
         >
         <ImageView
             android:layout_width="@dimen/_25sdp"
@@ -47,4 +50,14 @@
             android:src="@drawable/ic_baseline_add_24"
             android:layout_gravity="center"/>
     </LinearLayout>
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/banner_ad_id">
+    </com.google.android.gms.ads.AdView>
 </RelativeLayout>

@@ -5,15 +5,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".WordStartingWithInitialActivity">
-    <include layout="@layout/toolbar_layout"
-        android:id="@+id/toolbar"
-        />
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_4sdp"
-        android:background="@drawable/bordered_backround"
-        android:id="@+id/word_with_initial_rv"
-        android:layout_below="@+id/toolbar"/>
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/adView">
+        <include layout="@layout/toolbar_layout"
+            android:id="@+id/toolbar"
+            />
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_4sdp"
+            android:background="@drawable/bordered_backround"
+            android:id="@+id/word_with_initial_rv"
+            android:layout_below="@+id/toolbar"/>
+    </RelativeLayout>
+
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/banner_ad_id">
+    </com.google.android.gms.ads.AdView>
 
 </RelativeLayout>

@@ -24,6 +24,11 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.cocosw.bottomsheet.BottomSheet;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -71,6 +76,7 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
     String most_liked;
 
     private MediaController mediaController;
+    private AdView mAdView;
 
     private int trimType;
     private ProgressBar progressBar;
@@ -89,6 +95,16 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
         videoView = findViewById(R.id.video_view);
         progressBar=findViewById(R.id.progressBar);
         progressBar_tv=findViewById(R.id.progressBar_tv);
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         mediaController = new MediaController(this);
         Intent intent = getIntent();
