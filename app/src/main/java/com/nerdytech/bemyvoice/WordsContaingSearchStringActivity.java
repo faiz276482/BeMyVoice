@@ -20,6 +20,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.nerdytech.bemyvoice.adapter.WordsStartingWithInitialsAdapter;
 import com.nerdytech.bemyvoice.model.Word;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,8 @@ public class WordsContaingSearchStringActivity extends AppCompatActivity {
     List<String> words;
     List<Word> wordData;
     TextView noWordsAvailableTextView;
+    String normalizedSearchString;
+    String pattern = "^[A-Za-z0-9.\\-():',+/ ]+$";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,7 @@ public class WordsContaingSearchStringActivity extends AppCompatActivity {
 
         title.setText(String.format("Words containing %s", search_string));
         System.out.println(saved_sign_language+" "+alphabets+" "+search_string+" "+initials);
+        normalizedSearchString=Normalizer.normalize(search_string, Normalizer.Form.NFKD);
         CollectionReference colRef= FirebaseFirestore.getInstance().collection(("video_dictionary"));
         for(int i=0;i<alphabets.length();i++)
         {
@@ -71,30 +75,54 @@ public class WordsContaingSearchStringActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                            for(DocumentSnapshot documentSnapshot:queryDocumentSnapshots)
-                            {
-                                Word word=documentSnapshot.toObject(Word.class);
-                                if(documentSnapshot.getId().toLowerCase().contains(search_string.toLowerCase()) || documentSnapshot.getId().contains(search_string) || word.getMeaning().toLowerCase().contains(search_string.toLowerCase()))
-                                {
-                                    words.add(documentSnapshot.getId());
-                                    wordData.add(word);
+                            if(search_string.matches(pattern)) {
+                                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                    Word word = documentSnapshot.toObject(Word.class);
+                                    String docId = documentSnapshot.getId();
+
+                                    if (docId.toLowerCase().contains(search_string.toLowerCase()) || docId.contains(search_string) || word.getMeaning().toLowerCase().contains(search_string.toLowerCase())) {
+                                        words.add(docId);
+                                        wordData.add(word);
+                                    }
                                 }
-                            }
 //                            if(alphabets.charAt(alphabets.length()-1)==ch) {
 //                                System.out.println("In " + TAG + ": words" + words.toString());
-                                if(wordData.size()>0)
-                                {
+                                if (wordData.size() > 0) {
                                     noWordsAvailableTextView.setVisibility(View.INVISIBLE);
-                                    adapter = new WordsStartingWithInitialsAdapter(getBaseContext(),words,wordData,initials,saved_sign_language,search_string);
+                                    adapter = new WordsStartingWithInitialsAdapter(getBaseContext(), words, wordData, initials, saved_sign_language, search_string);
                                     recyclerView.setAdapter(adapter);
                                     adapter.notifyDataSetChanged();
-                                }
-                                else{
-                                    String msg=getString(R.string.no_words_found_containg_search_string)+"\n"+search_string;
+                                } else {
+                                    String msg = getString(R.string.no_words_found_containg_search_string) + "\n" + search_string;
                                     noWordsAvailableTextView.setText(msg);
                                     noWordsAvailableTextView.setVisibility(View.VISIBLE);
                                 }
 //                            }
+                            }
+                            else{
+                                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                    Word word = documentSnapshot.toObject(Word.class);
+                                    String docId = documentSnapshot.getId();
+
+                                    if (docId.toLowerCase().contains(search_string.toLowerCase()) || docId.contains(search_string) || word.getMeaning().toLowerCase().contains(search_string.toLowerCase()) || Normalizer.normalize(docId, Normalizer.Form.NFKD).contains(normalizedSearchString)) {
+                                        words.add(docId);
+                                        wordData.add(word);
+
+                                    }
+                                }
+//                            if(alphabets.charAt(alphabets.length()-1)==ch) {
+//                                System.out.println("In " + TAG + ": words" + words.toString());
+                                if (wordData.size() > 0) {
+                                    noWordsAvailableTextView.setVisibility(View.INVISIBLE);
+                                    adapter = new WordsStartingWithInitialsAdapter(getBaseContext(), words, wordData, initials, saved_sign_language, search_string);
+                                    recyclerView.setAdapter(adapter);
+                                    adapter.notifyDataSetChanged();
+                                } else {
+                                    String msg = getString(R.string.no_words_found_containg_search_string) + "\n" + search_string;
+                                    noWordsAvailableTextView.setText(msg);
+                                    noWordsAvailableTextView.setVisibility(View.VISIBLE);
+                                }
+                            }
                         }
                     });
 //            System.out.println("In "+TAG+": words"+words.toString());
