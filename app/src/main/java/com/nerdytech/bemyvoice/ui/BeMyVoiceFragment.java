@@ -54,8 +54,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.nerdytech.bemyvoice.AddCoinsActivity;
 import com.nerdytech.bemyvoice.CloudTextToSpeech.MainContract;
 import com.nerdytech.bemyvoice.CloudTextToSpeech.MainPresenter;
+import com.nerdytech.bemyvoice.MainActivity;
 import com.nerdytech.bemyvoice.R;
 import com.nerdytech.bemyvoice.model.Favourites;
 import com.nerdytech.bemyvoice.model.Wallet;
@@ -463,6 +465,16 @@ public class BeMyVoiceFragment extends Fragment implements MainContract.IView{
                 else {
                     Toast.makeText(getContext(), "Coins exhausted!\nTo avail this service please Add coins by clicking on the coins button!", LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        coins.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), AddCoinsActivity.class)
+                        .putExtra("from","BeMyVoice")
+                        .putExtra("coins",coinTV.getText()));
+                ((MainActivity)getContext()).finish();
             }
         });
 

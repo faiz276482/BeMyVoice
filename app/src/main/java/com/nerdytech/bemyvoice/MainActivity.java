@@ -208,6 +208,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        Log.i("from", String.valueOf(from));
         if(from==0) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new BeMyVoiceFragment()).commit();
         }
@@ -215,6 +217,11 @@ public class MainActivity extends AppCompatActivity {
         {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new VideoDictionaryFragment()).commit();
             bottomNavigationView.getMenu().findItem(R.id.video_dictionary).setChecked(true);
+        }
+        else if(from==2)
+        {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FavouritesFragment()).commit();
+            bottomNavigationView.getMenu().findItem(R.id.favourites).setChecked(true);
         }
 
     }

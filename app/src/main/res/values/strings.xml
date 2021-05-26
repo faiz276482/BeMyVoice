@@ -93,4 +93,9 @@
     <string name="upvotes">Upvotes</string>
     <string name="downvotes">Downvotes</string>
     <string name="no_words_found_containg_search_string">No words found containing </string>
+    <string name="watch_an_ad">Watch an Ad</string>
+    <string name="earn_10_coins">Earn 10 coins</string>
+    <string name="earn_1_coins">Earn 1 coin</string>
+    <string name="earn_5_coins">Earn 5 coins</string>
+    <string name="buy_or_earn_coins">Buy/Earn Coins</string>
 </resources>

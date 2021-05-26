@@ -1,6 +1,7 @@
 package com.nerdytech.bemyvoice.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +26,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.nerdytech.bemyvoice.AddCoinsActivity;
+import com.nerdytech.bemyvoice.MainActivity;
 import com.nerdytech.bemyvoice.R;
 import com.nerdytech.bemyvoice.adapter.FavouritesAdapter;
 import com.nerdytech.bemyvoice.model.Favourites;
@@ -137,6 +140,15 @@ public class FavouritesFragment extends Fragment {
 
                     }
                 });
+
+        coins.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), AddCoinsActivity.class)
+                        .putExtra("coins",coinTV.getText()));
+                ((MainActivity)getContext()).finish();
+            }
+        });
 
 
         return view;
