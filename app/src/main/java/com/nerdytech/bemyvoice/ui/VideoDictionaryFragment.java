@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,7 @@ public class VideoDictionaryFragment extends Fragment {
     WordsStartingWithAdapter adapter;
     ArrayList<String > resultArray;
     String PreferenceKey="beMyVoice";
+    String saved_sign_language;
 
     private AdView mAdView;
 
@@ -90,7 +92,7 @@ public class VideoDictionaryFragment extends Fragment {
         SharedPreferences sharedPreferences=getActivity().getSharedPreferences(PreferenceKey,Context.MODE_PRIVATE);
         Set<String> saved = new HashSet<>(sharedPreferences.getStringSet("SignLanguages", new HashSet<String>()));
         String defaultValue = "Select Language";
-        String saved_sign_language = sharedPreferences.getString("saved sign language", defaultValue);
+        saved_sign_language = sharedPreferences.getString("saved sign language", defaultValue);
 
         String alphabets=sharedPreferences.getString("alphabets","ABCDEFGHIJKLMNOPQRSTUVWXYZ");
         if(saved_sign_language.equals("Select Language"))
@@ -120,7 +122,7 @@ public class VideoDictionaryFragment extends Fragment {
                 {
                     SharedPreferences sharedPref = getActivity().getSharedPreferences(PreferenceKey,Context.MODE_PRIVATE);
                     String defaultValue = "Select Language";
-                    String saved_sign_language = sharedPref.getString("saved sign language", defaultValue);
+                    saved_sign_language = sharedPref.getString("saved sign language", defaultValue);
                     System.out.println("saved sign language="+saved_sign_language);
                     String s="";
                     for (QueryDocumentSnapshot doc:task.getResult())
@@ -163,7 +165,9 @@ public class VideoDictionaryFragment extends Fragment {
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString("saved sign language", String.valueOf(signLanguageSpinner.getItemAtPosition(position)));
                 editor.apply();
-                FirebaseFirestore.getInstance().collection("video_dictionary").document(String.valueOf(signLanguageSpinner.getItemAtPosition(position)))
+                saved_sign_language=String.valueOf(signLanguageSpinner.getItemAtPosition(position));
+
+                FirebaseFirestore.getInstance().collection("video_dictionary").document(String.valueOf(saved_sign_language))
                         .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -171,7 +175,10 @@ public class VideoDictionaryFragment extends Fragment {
                             Map<String, Object> map = documentSnapshot.getData();
                             String s = (String) map.get("alphabets");
                             editor.putString("alphabets", s).apply();
-                            setResultRecyclerView(s, (String) signLanguageSpinner.getItemAtPosition(position));
+                            setResultRecyclerView(s,  saved_sign_language);
+                        }
+                        else{
+                            setResultRecyclerView("", saved_sign_language);
                         }
                     }
                 });
@@ -187,15 +194,31 @@ public class VideoDictionaryFragment extends Fragment {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(TextUtils.isEmpty(search_edittext.getText()))
-                {
-                    Toast.makeText(getContext(), "PLease enter a text int the search bar", Toast.LENGTH_SHORT).show();
+                if(saved_sign_language!=null && !saved_sign_language.equals("Select Language")) {
+                    if (TextUtils.isEmpty(search_edittext.getText())) {
+                        Toast.makeText(getContext(), "Please enter a text int the search bar", Toast.LENGTH_SHORT).show();
+                    } else {
+                        startActivity(new Intent(getContext(), WordsContaingSearchStringActivity.class)
+                                .putExtra("searchString", search_edittext.getText().toString())
+                                .putExtra("initials", "Words starting with  "));
+                        ((MainActivity) getContext()).finish();
+                    }
                 }
                 else {
-                    startActivity(new Intent(getContext(), WordsContaingSearchStringActivity.class)
-                    .putExtra("searchString",search_edittext.getText().toString())
-                    .putExtra("initials","Words starting with  "));
-                    ((MainActivity)getContext()).finish();
+                    Toast.makeText(getContext(), "Please Select a Signed Language", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        addWord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(saved_sign_language!=null && !saved_sign_language.equals("Select Language"))
+                {
+                    Log.i("Button pressed","addWord");
+                }
+                else {
+                    Toast.makeText(getContext(), "Please Select a Signed Language", Toast.LENGTH_SHORT).show();
                 }
             }
         });

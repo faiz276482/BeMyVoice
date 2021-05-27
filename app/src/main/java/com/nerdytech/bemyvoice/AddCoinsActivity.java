@@ -177,7 +177,7 @@ public class AddCoinsActivity extends AppCompatActivity implements OnUserEarnedR
 
     public void loadVideoRewardAd()
     {
-        RewardedAd.load(this, getString(R.string.test_video_add_id),
+        RewardedAd.load(this, getString(R.string.video_add_id),
                 adRequest, new RewardedAdLoadCallback(){
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
