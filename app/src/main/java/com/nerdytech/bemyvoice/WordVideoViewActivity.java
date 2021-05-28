@@ -79,6 +79,7 @@ public class WordVideoViewActivity extends AppCompatActivity {
     String search_string;
     boolean notVoted=true,upVoteState=false,downVoteState=false;
     Video video;
+    ImageView deleteVideoBtn;
 
     StorageReference storageReference;
 
@@ -107,6 +108,7 @@ public class WordVideoViewActivity extends AppCompatActivity {
         downvotes=findViewById(R.id.btn_downvotes);
         videoView=findViewById(R.id.video_view);
         title=findViewById(R.id.title);
+        deleteVideoBtn = findViewById(R.id.delete_video);
         back=findViewById(R.id.back);
 
         mediaController = new MediaController(this){
@@ -127,6 +129,10 @@ public class WordVideoViewActivity extends AppCompatActivity {
         maxVotes=intent.getIntExtra("maxVotes",0);
         search_string=intent.getStringExtra("searchString");
 
+        if(videoByUid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+            deleteVideoBtn.setVisibility(View.VISIBLE);
+        }
+
         title.setText(String.format("%s video by %s", word, videoByUsername));
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,6 +140,8 @@ public class WordVideoViewActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+
+
 
 //        System.out.println("saved sign language=" + saved_sign_language);
         System.out.println("In "+TAG+":\t" + saved_sign_language + "\t" + word + "\t" + meaning +"\t"+ videoByUsername+ "\t"+ videoByUid+"\t"+maxVotes+"\t"+most_liked+"\n"+search_string);
@@ -146,6 +154,13 @@ public class WordVideoViewActivity extends AppCompatActivity {
                 .document(word)
                 .collection("video")
                 .document(videoByUid);
+
+        deleteVideoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteVideo(docRef,"Your video has been deleted successfully!");
+            }
+        });
 
         progressDialog = ProgressDialog.show(WordVideoViewActivity.this,"Loading video","Please Wait!");
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -307,78 +322,7 @@ public class WordVideoViewActivity extends AppCompatActivity {
                 if((upvoteCount+downvoteCount)>=5) {
                     if(votesPercentage<=25)
                     {
-                        docRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        docRef.collection("votes").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                if (task.isSuccessful()) {
-                                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                                        docRef.collection("votes").document(document.getId()).delete();
-                                                    }
-                                                    if(most_liked.equals(videoByUid))
-                                                    {
-                                                        DocumentReference docRef3= FirebaseFirestore.getInstance().collection("video_dictionary")
-                                                                .document(saved_sign_language)
-                                                                .collection(initial)
-                                                                .document(word);
-                                                        CollectionReference colRef=docRef3.collection("video");
-                                                        colRef.orderBy("upvotes", Query.Direction.DESCENDING).limit(1).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                                            @Override
-                                                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                                                if(queryDocumentSnapshots.size()>0) {
-                                                                    List<Video> video = new ArrayList<>();
-                                                                    String id = "default";
-                                                                    for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                                                        video.add(documentSnapshot.toObject(Video.class));
-                                                                        id = documentSnapshot.getId();
-                                                                    }
-                                                                    System.out.println(video.get(0).getUpvotes() + video.get(0).getAuthor() + id);
-                                                                    most_liked = id;
-                                                                    maxVotes = video.get(0).getUpvotes();
-//                                                                    if (most_liked == null) {
-//                                                                        maxVotes = 0;
-//                                                                        most_liked="default";
-//                                                                        docRef3.update("votes", 0, "most_liked", "default");
-//                                                                    } else {
-                                                                        docRef3.update("votes", maxVotes, "most_liked", most_liked);
-//                                                                    }
-                                                                }
-                                                                else{
-                                                                    maxVotes = 0;
-                                                                    most_liked="default";
-                                                                    docRef3.update("votes", 0, "most_liked", "default");
-                                                                }
-                                                            }
-                                                        });
-//                                                                .addOnFailureListener(new OnFailureListener() {
-//                                                            @Override
-//                                                            public void onFailure(@NonNull Exception e) {
-//                                                                DocumentReference docRef3= FirebaseFirestore.getInstance().collection("video_dictionary")
-//                                                                        .document(saved_sign_language)
-//                                                                        .collection(initial)
-//                                                                        .document(word);
-//                                                                docRef3.update("votes",0,"most_liked","default");
-//                                                            }
-//                                                        });
-                                                    }
-                                                    Toast.makeText(WordVideoViewActivity.this, "This videos legitimacy score went below 25% so it was deleted!", Toast.LENGTH_SHORT).show();
-                                                    onBackPressed();
-                                                } else {
-                                                    Log.d("fetched words", "Error getting documents: ", task.getException());
-                                                }
-                                            }
-                                        });
-
-                                    }
-                                });
-
-                            }
-                        });
+                        deleteVideo(docRef,"This videos legitimacy score went below 25% so it was deleted!");
                     }
                 }
 
@@ -412,5 +356,75 @@ public class WordVideoViewActivity extends AppCompatActivity {
                 .putExtra("searchString",search_string));
         finish();
 
+    }
+
+    void deleteVideo(DocumentReference docRef,String msg){
+        deleteVideoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                docRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                docRef.collection("votes").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                docRef.collection("votes").document(document.getId()).delete();
+                                            }
+                                            if(most_liked.equals(videoByUid))
+                                            {
+                                                DocumentReference docRef3= FirebaseFirestore.getInstance().collection("video_dictionary")
+                                                        .document(saved_sign_language)
+                                                        .collection(initial)
+                                                        .document(word);
+                                                CollectionReference colRef=docRef3.collection("video");
+                                                colRef.orderBy("upvotes", Query.Direction.DESCENDING).limit(1).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                                        if(queryDocumentSnapshots.size()>0) {
+                                                            List<Video> video = new ArrayList<>();
+                                                            String id = "default";
+                                                            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                                                video.add(documentSnapshot.toObject(Video.class));
+                                                                id = documentSnapshot.getId();
+                                                            }
+                                                            System.out.println(video.get(0).getUpvotes() + video.get(0).getAuthor() + id);
+                                                            most_liked = id;
+                                                            maxVotes = video.get(0).getUpvotes();
+//                                                                    if (most_liked == null) {
+//                                                                        maxVotes = 0;
+//                                                                        most_liked="default";
+//                                                                        docRef3.update("votes", 0, "most_liked", "default");
+//                                                                    } else {
+                                                            docRef3.update("votes", maxVotes, "most_liked", most_liked);
+//                                                                    }
+                                                        }
+                                                        else{
+                                                            maxVotes = 0;
+                                                            most_liked="default";
+                                                            docRef3.update("votes", 0, "most_liked", "default");
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                            Toast.makeText(WordVideoViewActivity.this, msg, Toast.LENGTH_SHORT).show();
+                                            onBackPressed();
+                                        } else {
+                                            Log.d("fetched words", "Error getting documents: ", task.getException());
+                                        }
+                                    }
+                                });
+
+                            }
+                        });
+
+                    }
+                });
+            }
+        });
     }
 }

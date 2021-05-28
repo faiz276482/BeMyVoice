@@ -10,8 +10,23 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/adView"
         android:layout_alignParentTop="true">
-        <include layout="@layout/toolbar_layout"
-            android:id="@+id/toolbar"/>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/toolbar">
+            <include layout="@layout/toolbar_layout"
+                />
+            <ImageView
+                android:layout_width="@dimen/_25sdp"
+                android:layout_height="@dimen/_25sdp"
+                android:src="@drawable/ic_delete"
+                android:id="@+id/delete_video"
+                android:layout_centerVertical="true"
+                android:paddingEnd="@dimen/_5sdp"
+                android:visibility="gone"
+                android:layout_alignParentEnd="true"/>
+        </RelativeLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"

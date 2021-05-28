@@ -226,7 +226,8 @@ public class ActVideoTrimmer extends AppCompatActivity {
                 minFromGap = trimVideoOptions.minToMax[0];
                 maxToGap = trimVideoOptions.minToMax[1];
                 minFromGap = minFromGap != 0 ? minFromGap : totalDuration;
-                maxToGap = maxToGap != 0 ? maxToGap : totalDuration;
+                maxToGap = maxToGap != 0 ? maxToGap+1 : totalDuration;
+                maxToGap= Math.min(maxToGap, totalDuration);
             }
             if (destinationPath != null) {
                 File outputDir = new File(destinationPath);
