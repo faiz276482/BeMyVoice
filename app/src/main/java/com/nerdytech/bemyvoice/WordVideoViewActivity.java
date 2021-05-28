@@ -7,7 +7,9 @@ import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,11 +26,13 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -43,6 +47,7 @@ import com.google.firebase.storage.StorageReference;
 import com.nerdytech.bemyvoice.adapter.WordVideoByUsersAdapter;
 import com.nerdytech.bemyvoice.adapter.WordsStartingWithInitialsAdapter;
 import com.nerdytech.bemyvoice.model.Video;
+import com.nerdytech.bemyvoice.model.Wallet;
 import com.nerdytech.bemyvoice.model.Word;
 
 import java.net.URI;
@@ -87,6 +92,8 @@ public class WordVideoViewActivity extends AppCompatActivity {
 
     private AdView mAdView;
 
+    int coins;
+
 
 
     @Override
@@ -103,6 +110,9 @@ public class WordVideoViewActivity extends AppCompatActivity {
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+
+        SharedPreferences sharedPreferences=getSharedPreferences(PreferenceKey, Context.MODE_PRIVATE);
+        coins=sharedPreferences.getInt("coins",0);
 
         upvotes=findViewById(R.id.btn_upvotes);
         downvotes=findViewById(R.id.btn_downvotes);
@@ -159,6 +169,7 @@ public class WordVideoViewActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 deleteVideo(docRef,"Your video has been deleted successfully!");
+                addCoins(-10);
             }
         });
 
@@ -247,7 +258,6 @@ public class WordVideoViewActivity extends AppCompatActivity {
                     HashMap<String,String> votes=new HashMap<>();
                     votes.put("value","upvote");
                     docRef2.set(votes);
-
                 }
                 else{
                     video.setUpvotes(upvoteCount);
@@ -257,7 +267,7 @@ public class WordVideoViewActivity extends AppCompatActivity {
                     HashMap<String,String> votes=new HashMap<>();
                     votes.put("value","upvote");
                     docRef2.set(votes);
-
+                    addCoins(2);
                 }
 
                 if(upvoteCount>maxVotes)
@@ -305,7 +315,6 @@ public class WordVideoViewActivity extends AppCompatActivity {
                     votes.put("value","downvote");
                     docRef2.set(votes);
                     notVoted=false;
-
                 }
                 else{
                     video.setUpvotes(upvoteCount);
@@ -315,7 +324,7 @@ public class WordVideoViewActivity extends AppCompatActivity {
                     HashMap<String,String> votes=new HashMap<>();
                     votes.put("value","downvote");
                     docRef2.set(votes);
-
+                    addCoins(2);
                 }
 
                 double votesPercentage=(upvoteCount/(upvoteCount+downvoteCount))*100;
@@ -359,10 +368,7 @@ public class WordVideoViewActivity extends AppCompatActivity {
     }
 
     void deleteVideo(DocumentReference docRef,String msg){
-        deleteVideoBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                docRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+        docRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -424,6 +430,18 @@ public class WordVideoViewActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    void addCoins(int val)
+    {
+        coins+=val;
+        Log.i("coins", String.valueOf(coins));
+        FirebaseDatabase.getInstance().getReference().child("Wallet").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .setValue(new Wallet(coins)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+//                Toast.makeText(getApplicationContext(), "-2 coins for textToSpeech conversion!", LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), String.format("%d %s added",val,"Coins"), Toast.LENGTH_SHORT).show();
             }
         });
     }

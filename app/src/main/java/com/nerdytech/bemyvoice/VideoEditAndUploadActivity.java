@@ -47,6 +47,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.nerdytech.bemyvoice.model.User;
 import com.nerdytech.bemyvoice.model.Video;
+import com.nerdytech.bemyvoice.model.Wallet;
 import com.videotrimmer.library.utils.CompressOption;
 import com.videotrimmer.library.utils.LogMessage;
 import com.videotrimmer.library.utils.TrimType;
@@ -72,6 +73,7 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
     Uri uri;
     String url;
 
+    int coins;
     int maxVotes;
     String most_liked;
 
@@ -105,6 +107,9 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+
+        SharedPreferences sharedPreferences=getSharedPreferences(PreferenceKey, Context.MODE_PRIVATE);
+        coins=sharedPreferences.getInt("coins",0);
 
         mediaController = new MediaController(this);
         Intent intent = getIntent();
@@ -150,6 +155,7 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
                     @Override
                     public void onSuccess(Void aVoid) {
                         goBackToPrevActivity();
+                        addCoins(10);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -385,6 +391,20 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
             }
         }
         return isAllGranted;
+    }
+
+    void addCoins(int val)
+    {
+        coins+=val;
+        Log.i("coins", String.valueOf(coins));
+        FirebaseDatabase.getInstance().getReference().child("Wallet").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .setValue(new Wallet(coins)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+//                Toast.makeText(getApplicationContext(), "-2 coins for textToSpeech conversion!", LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), String.format("%d %s added",val,"Coins"), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
