@@ -34,6 +34,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.nerdytech.bemyvoice.model.Wallet;
 
+import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.LENGTH_SHORT;
 
 public class AddCoinsActivity extends AppCompatActivity implements OnUserEarnedRewardListener {
@@ -49,7 +50,7 @@ public class AddCoinsActivity extends AppCompatActivity implements OnUserEarnedR
     boolean backPressed=false;
     String from;
 
-    TextView title;
+    TextView title,coinsTV;
     ImageView back;
     Button interstitial,rewarded_interstitial,rewarded_video;
 
@@ -59,6 +60,7 @@ public class AddCoinsActivity extends AppCompatActivity implements OnUserEarnedR
         setContentView(R.layout.activity_add_coins);
 
         title=findViewById(R.id.title);
+        coinsTV=findViewById(R.id.coins_tv);
         back=findViewById(R.id.back);
         interstitial=findViewById(R.id.btn_interstitial_ad);
         rewarded_video=findViewById(R.id.btn_video_ad);
@@ -71,6 +73,8 @@ public class AddCoinsActivity extends AppCompatActivity implements OnUserEarnedR
 
         coins=Integer.parseInt(getIntent().getStringExtra("coins"));
         from=getIntent().getStringExtra("from");
+
+        coinsTV.setText(String.valueOf(coins));
 
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
@@ -88,7 +92,7 @@ public class AddCoinsActivity extends AppCompatActivity implements OnUserEarnedR
         rewarded_video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(AddCoinsActivity.this, "Loading Video Ad", LENGTH_SHORT).show();
+                Toast.makeText(AddCoinsActivity.this, "Loading Video Ad", LENGTH_LONG).show();
                 loadVideoRewardAd();
             }
         });
@@ -96,7 +100,7 @@ public class AddCoinsActivity extends AppCompatActivity implements OnUserEarnedR
         rewarded_interstitial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(AddCoinsActivity.this, "Loading short video Ad", LENGTH_SHORT).show();
+                Toast.makeText(AddCoinsActivity.this, "Loading short video Ad", LENGTH_LONG).show();
                 loadRewardedInterstictialAd(getString(R.string.rewarded_interstitial_add_id));
             }
         });
@@ -104,7 +108,7 @@ public class AddCoinsActivity extends AppCompatActivity implements OnUserEarnedR
         interstitial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(AddCoinsActivity.this, "Loading image Ad", LENGTH_SHORT).show();
+                Toast.makeText(AddCoinsActivity.this, "Loading image/video Ad.\nIf video add is shown you may skip.\nYour reward will be added regardless", LENGTH_LONG).show();
                 loadInterstitial();
             }
         });
@@ -152,6 +156,7 @@ public class AddCoinsActivity extends AppCompatActivity implements OnUserEarnedR
                         // Make sure to set your reference to null so you don't
                         // show it a second time.
                         coins+=1;
+                        coinsTV.setText(String.valueOf(coins));
                         FirebaseDatabase.getInstance().getReference().child("Wallet").child(mAuth.getCurrentUser().getUid())
                                 .setValue(new Wallet(coins)).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -298,6 +303,7 @@ public class AddCoinsActivity extends AppCompatActivity implements OnUserEarnedR
     public void onBackPressed() {
         if(!backPressed) {
             loadRewardedInterstictialAd(getString(R.string.onback_preesed_rewarded_interstitial_ad));
+            Toast.makeText(this, "We will be Showing you a short video ad\nFeel free to skip if you want\nYo will be rewarded 5 coins if you watch it", LENGTH_LONG).show();
             backPressed=true;
         }
 
@@ -313,6 +319,7 @@ public class AddCoinsActivity extends AppCompatActivity implements OnUserEarnedR
     void addCoins(RewardItem rewardItem)
     {
         coins+=rewardItem.getAmount();
+        coinsTV.setText(String.valueOf(coins));
         FirebaseDatabase.getInstance().getReference().child("Wallet").child(mAuth.getCurrentUser().getUid())
                 .setValue(new Wallet(coins)).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
