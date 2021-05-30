@@ -2,8 +2,11 @@ package com.nerdytech.bemyvoice;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,6 +29,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.nerdytech.bemyvoice.adapter.WordsStartingWithInitialsAdapter;
 import com.nerdytech.bemyvoice.model.Word;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +44,7 @@ public class WordStartingWithInitialActivity extends AppCompatActivity {
     int maxVotes;
     String most_liked;
     private AdView mAdView;
+    EditText searchEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +55,7 @@ public class WordStartingWithInitialActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
         title=findViewById(R.id.title);
         back=findViewById(R.id.back);
+        searchEditText=findViewById(R.id.search_edittext);
 
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
@@ -89,12 +95,59 @@ public class WordStartingWithInitialActivity extends AppCompatActivity {
                     adapter = new WordsStartingWithInitialsAdapter(getBaseContext(),words,wordData,initials,saved_sign_language,null);
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
+
+                    searchEditText.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            filterAndUpdate(words,wordData,s.toString());
+                        }
+                    });
                     Log.d("fetched words", words.toString());
                 } else {
                     Log.d("fetched words", "Error getting documents: ", task.getException());
                 }
             }
         });
+    }
+
+    private void filterAndUpdate(List<String> words, List<Word> wordData,String s) {
+        if(!s.equals("")) {
+            s=getNormalizedString(s);
+            List<String> tempWord = new ArrayList();
+            List<Word> tempWordData = new ArrayList();
+            for (int i = 0; i < words.size(); i++) {
+                String word = getNormalizedString(words.get(i));
+                if (word.toLowerCase().contains(s.toLowerCase())) {
+                    tempWord.add(word);
+                    tempWordData.add(wordData.get(i));
+                }
+            }
+            adapter = new WordsStartingWithInitialsAdapter(getBaseContext(), tempWord, tempWordData, initials, saved_sign_language, null);
+            recyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        }
+        else {
+            adapter = new WordsStartingWithInitialsAdapter(getBaseContext(),words,wordData,initials,saved_sign_language,null);
+            recyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        }
+
+    }
+
+    public String getNormalizedString(String s)
+    {
+        String normalizedString=Normalizer.normalize(s, Normalizer.Form.NFKD);
+        return  normalizedString;
     }
 
     @Override
