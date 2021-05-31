@@ -274,7 +274,7 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
             LogMessage.v("Valasdd "+data);
             TrimVideo.activity(data)
                     .setTrimType(TrimType.MIN_MAX_DURATION)
-                    .setMinToMax(2, 5)
+                    .setMinToMax(2, 8)
                     .setHideSeekBar(true)
                     .setCompressOption(new CompressOption(5)) //pass empty constructor for default compress option
                     .setDestination("/storage/emulated/0/DCIM/TESTFOLDER")
