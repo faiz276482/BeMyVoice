@@ -27,23 +27,29 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.nerdytech.bemyvoice.MainActivity;
 import com.nerdytech.bemyvoice.R;
-import com.nerdytech.bemyvoice.WordStartingWithInitialActivity;
 import com.nerdytech.bemyvoice.WordsContaingSearchStringActivity;
 import com.nerdytech.bemyvoice.adapter.WordsStartingWithAdapter;
-import com.nerdytech.bemyvoice.model.MostLiked;
+import com.nerdytech.bemyvoice.model.Word;
+import com.nerdytech.bemyvoice.model.Word2;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,6 +65,7 @@ public class VideoDictionaryFragment extends Fragment {
     ArrayList<String > resultArray;
     String PreferenceKey="beMyVoice";
     String saved_sign_language;
+    String pattern = "^[A-Za-z0-9.\\-():',+/ ]+$";
 
     private AdView mAdView;
 
@@ -69,7 +76,8 @@ public class VideoDictionaryFragment extends Fragment {
         // Inflate the layout for this fragment
         view=inflater.inflate(R.layout.fragment_video_dictionary, container, false);
 //        database_Write();
-//        database_Write2();
+//        database_Write3();
+//        delete();
 
         MobileAds.initialize(getContext(), new OnInitializationCompleteListener() {
             @Override
@@ -89,12 +97,14 @@ public class VideoDictionaryFragment extends Fragment {
         addWord=view.findViewById(R.id.add_word_btn);
         search=view.findViewById(R.id.search_btn);
 
+
         SharedPreferences sharedPreferences=getActivity().getSharedPreferences(PreferenceKey,Context.MODE_PRIVATE);
         Set<String> saved = new HashSet<>(sharedPreferences.getStringSet("SignLanguages", new HashSet<String>()));
         String defaultValue = "Select Language";
         saved_sign_language = sharedPreferences.getString("saved sign language", defaultValue);
 
         String alphabets=sharedPreferences.getString("alphabets","ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+
         if(saved_sign_language.equals("Select Language"))
         {
             alphabets="";
@@ -199,7 +209,7 @@ public class VideoDictionaryFragment extends Fragment {
                         Toast.makeText(getContext(), "Please enter a text int the search bar", Toast.LENGTH_SHORT).show();
                     } else {
                         startActivity(new Intent(getContext(), WordsContaingSearchStringActivity.class)
-                                .putExtra("searchString", search_edittext.getText().toString())
+                                .putExtra("searchString", search_edittext.getText().toString().toLowerCase())
                                 .putExtra("initials", "Words starting with  "));
                         ((MainActivity) getContext()).finish();
                     }
@@ -251,47 +261,95 @@ public class VideoDictionaryFragment extends Fragment {
 
             String coll_id="Words starting with "+s.charAt(i);
             String name="British";
+
+
             int finalI = i;
             String finalS = s;
             FirebaseFirestore.getInstance().collection("video_dictionary")
                     .document(name+" Sign Language")
                     .collection(coll_id)
                     .document(String.valueOf(s.charAt(i)))
-                    .set(new MostLiked("default",0,String.valueOf(s.charAt(i)))).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    .set(new Word(String.valueOf(s.charAt(i)),"default",0,String.valueOf(finalS.charAt(i)))).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     System.out.println(finalS.charAt(finalI)+" is written");
                 }
             });
-//            FirebaseFirestore.getInstance().collection("video_dictionary")
-//                    .document(name+" Sign Language")
-//                    .collection(coll_id)
-//                    .document(String.valueOf((s.charAt(i))))
-//                    .collection(FirebaseAuth.getInstance().getCurrentUser().getUid())
-//                    .document(String.valueOf(s.charAt(i)+"_"+FirebaseAuth.getInstance().getCurrentUser().getUid()))
-//                    .set(new Video("default",0,0));
         }
     }
 	
-	void database_Write2()
+	void database_Write3()
 	{
-	    String[] data={"A-lot", "Abdomen", "About"};
+        String[] data = {"A-lot", "Abdomen", "About"};
+
+        Log.i("In","database_Write2()");
         for(int i=0;i<data.length;i++)
         {
-            String coll_id="Words starting with "+data[i].charAt(0);
-            String name="American";
+            String value=getNormalizedString(data[i]);
+            String coll_id="Words starting with "+value.charAt(0);
+            String name="Indian";
 
-            int finalI = i;
+//            System.out.println(value.toLowerCase());
+
+
             FirebaseFirestore.getInstance().collection("video_dictionary")
                     .document(name+" Sign Language")
                     .collection(coll_id)
-                    .document(data[i])
-                    .set(new MostLiked("default",0,"")).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    .document(value)
+                    .set(new Word("","default",0,value.toLowerCase())).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    System.out.println(data[finalI]+" is written at ="+name+" Sign Language>"+coll_id+">"+data[finalI]);
+                    System.out.println(value+" is written at ="+name+" Sign Language>"+coll_id+">"+value);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    e.printStackTrace();
+                }
+            }).addOnCanceledListener(new OnCanceledListener() {
+                @Override
+                public void onCanceled() {
+                    System.out.println("cancelled");
                 }
             });
         }
 	}
+    public String getNormalizedString(String s)
+    {
+        String normalizedString= Normalizer.normalize(s, Normalizer.Form.NFKD);
+        return  normalizedString;
+    }
+
+//    public void delete(){
+//        String s="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+//        for(int i=0;i<s.length();i++) {
+//            System.out.println(s.charAt(i));
+//
+//            String coll_id = "Words starting with " + s.charAt(i);
+//            String name = "Indian";
+//
+//
+//            int finalI = i;
+//            String finalS = s;
+//            CollectionReference colRef=FirebaseFirestore.getInstance().collection("video_dictionary")
+//                    .document(name + " Sign Language")
+//                    .collection(coll_id);
+//            colRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                @Override
+//                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                    for(DocumentSnapshot doc:task.getResult()){
+//                        colRef.document(doc.getId()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+//                            @Override
+//                            public void onSuccess(Void aVoid) {
+//                                System.out.println(doc.getId()+" is deleted");
+//                            }
+//                        });
+//
+//                    }
+//                }
+//            });
+//
+//        }
+//    }
+
 }

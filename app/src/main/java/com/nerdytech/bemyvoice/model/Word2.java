@@ -1,14 +1,29 @@
 package com.nerdytech.bemyvoice.model;
 
-public class MostLiked {
+import java.util.List;
+
+public class Word2 {
+    String meaning;
     String most_liked;
     int votes;
-    String meaning;
+    String word;
 
-    public MostLiked(String most_liked, int votes,String meaning) {
+    public Word2(String meaning, String most_liked, int votes, String word) {
+        this.meaning = meaning;
         this.most_liked = most_liked;
         this.votes = votes;
-        this.meaning=meaning;
+        this.word=word;
+    }
+
+    public Word2() {
+    }
+
+    public String getWord() {
+        return word;
+    }
+
+    public void setWord(String word) {
+        this.word = word;
     }
 
     public String getMeaning() {

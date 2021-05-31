@@ -1,5 +1,6 @@
 package com.nerdytech.bemyvoice;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,7 +17,9 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
@@ -80,10 +83,51 @@ public class WordsContaingSearchStringActivity extends AppCompatActivity {
         search_string=intent.getStringExtra("searchString");
         initials=intent.getStringExtra("initials");
 
-        title.setText(String.format("Words containing %s", search_string));
+        title.setText(String.format("Search Result for words starting with  %s", search_string));
         System.out.println(saved_sign_language+" "+alphabets+" "+search_string+" "+initials);
-        normalizedSearchString=Normalizer.normalize(search_string, Normalizer.Form.NFKD);
-        CollectionReference colRef= FirebaseFirestore.getInstance().collection(("video_dictionary"));
+
+        normalizedSearchString=getNormalizedString(search_string);
+
+        System.out.println("Words starting with "+String.valueOf(search_string.charAt(0)).toUpperCase());
+
+        CollectionReference colRef= FirebaseFirestore.getInstance()
+                .collection(("video_dictionary"))
+                .document(saved_sign_language)
+                .collection("Words starting with "+String.valueOf(search_string.charAt(0)).toUpperCase());
+        String endcode=normalizedSearchString.substring(0,normalizedSearchString.length()-1)+(char)(normalizedSearchString.charAt(normalizedSearchString.length()-1)+1);
+        System.out.println(endcode+" endcode\n"+normalizedSearchString);
+        colRef.whereGreaterThanOrEqualTo("word",normalizedSearchString).whereLessThan("word",endcode)
+//        colRef.whereArrayContains("wordList",normalizedSearchString.toLowerCase())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for(DocumentSnapshot doc:task.getResult()){
+                                Word word = doc.toObject(Word.class);
+                                String docId = doc.getId();
+                                words.add(docId);
+                                wordData.add(word);
+                            }
+                            if (wordData.size() > 0) {
+                                noWordsAvailableTextView.setVisibility(View.INVISIBLE);
+                                adapter = new WordsStartingWithInitialsAdapter(getBaseContext(), words, wordData, initials, saved_sign_language, search_string);
+                                recyclerView.setAdapter(adapter);
+                                adapter.notifyDataSetChanged();
+                            } else {
+                                String msg = getString(R.string.no_words_found_containg_search_string) + "\n" + search_string;
+                                if(!alphabets.matches(pattern)) {
+                                    msg = getString(R.string.no_words_found_containg_search_string) + "\n" + search_string + "\n May be because it has non english literals\nYou can search for it in the\nWords Starting with " + search_string.charAt(0);
+                                }
+
+                                noWordsAvailableTextView.setText(msg);
+                                noWordsAvailableTextView.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    }
+                });
+
+        /*
         for(int i=0;i<alphabets.length();i++)
         {
             char ch=alphabets.charAt(i);
@@ -144,7 +188,7 @@ public class WordsContaingSearchStringActivity extends AppCompatActivity {
                         }
                     });
 //            System.out.println("In "+TAG+": words"+words.toString());
-        }
+        }*/
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,5 +204,11 @@ public class WordsContaingSearchStringActivity extends AppCompatActivity {
         startActivity(new Intent(WordsContaingSearchStringActivity.this,MainActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra("from",1));
         finish();
+    }
+
+    public String getNormalizedString(String s)
+    {
+        String normalizedString=Normalizer.normalize(s, Normalizer.Form.NFKD);
+        return  normalizedString;
     }
 }
