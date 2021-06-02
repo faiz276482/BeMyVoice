@@ -88,14 +88,19 @@ public class WordsContaingSearchStringActivity extends AppCompatActivity {
 
         normalizedSearchString=getNormalizedString(search_string);
 
-        System.out.println("Words starting with "+String.valueOf(search_string.charAt(0)).toUpperCase());
+        char initial=normalizedSearchString.charAt(0);
+        if((initial+"").matches("ᄋ")&&normalizedSearchString.length()>1){
+            System.out.println("ᄋ matches");
+            initial=search_string.charAt(0);
+        }
+        System.out.println("Words starting with "+String.valueOf(initial).toUpperCase());
 
         CollectionReference colRef= FirebaseFirestore.getInstance()
                 .collection(("video_dictionary"))
                 .document(saved_sign_language)
-                .collection("Words starting with "+String.valueOf(search_string.charAt(0)).toUpperCase());
+                .collection("Words starting with "+String.valueOf(initial).toUpperCase());
         String endcode=normalizedSearchString.substring(0,normalizedSearchString.length()-1)+(char)(normalizedSearchString.charAt(normalizedSearchString.length()-1)+1);
-        System.out.println(endcode+" endcode\n"+normalizedSearchString);
+        System.out.println("startcode:"+normalizedSearchString+"\nendcode:"+ endcode);
         colRef.whereGreaterThanOrEqualTo("word",normalizedSearchString).whereLessThan("word",endcode)
 //        colRef.whereArrayContains("wordList",normalizedSearchString.toLowerCase())
                 .get()
@@ -103,6 +108,7 @@ public class WordsContaingSearchStringActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
+                            System.out.println("Size:"+task.getResult().size());
                             for(DocumentSnapshot doc:task.getResult()){
                                 Word word = doc.toObject(Word.class);
                                 String docId = doc.getId();
@@ -116,10 +122,6 @@ public class WordsContaingSearchStringActivity extends AppCompatActivity {
                                 adapter.notifyDataSetChanged();
                             } else {
                                 String msg = getString(R.string.no_words_found_containg_search_string) + "\n" + search_string;
-                                if(!alphabets.matches(pattern)) {
-                                    msg = getString(R.string.no_words_found_containg_search_string) + "\n" + search_string + "\n May be because it has non english literals\nYou can search for it in the\nWords Starting with " + search_string.charAt(0);
-                                }
-
                                 noWordsAvailableTextView.setText(msg);
                                 noWordsAvailableTextView.setVisibility(View.VISIBLE);
                             }
