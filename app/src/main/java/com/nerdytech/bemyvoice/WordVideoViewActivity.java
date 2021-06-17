@@ -10,6 +10,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -231,7 +232,24 @@ public class WordVideoViewActivity extends AppCompatActivity {
                 videoView.start();
                 videoView.setOnPreparedListener(mediaPlayer -> {
                     mediaController.setAnchorView(videoView);
+                    mediaPlayer.setLooping(true);
                     progressDialog.dismiss();
+                });
+                videoView.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+                    @Override
+                    public boolean onInfo(MediaPlayer mp, int what, int extra) {
+                        if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+//                            progressBarLandScape.setVisibility(View.GONE);
+                            progressDialog.show();
+                            return true;
+                        }
+                        else if(what == MediaPlayer.MEDIA_INFO_BUFFERING_START){
+//                            progressBarLandScape.setVisibility(View.VISIBLE);
+                            progressDialog.dismiss();
+                            return true;
+                        }
+                        return false;
+                    }
                 });
 //                System.out.println(FirebaseAuth.getInstance().getCurrentUser().getUid());
 

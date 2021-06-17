@@ -12,12 +12,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nerdytech.bemyvoice.R;
 import com.nerdytech.bemyvoice.VideosOfWordActivity;
+import com.nerdytech.bemyvoice.model.LastLoaded;
 import com.nerdytech.bemyvoice.model.Word;
 
+import java.text.Normalizer;
 import java.util.List;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
@@ -66,36 +70,33 @@ public class WordsStartingWithInitialsAdapter extends RecyclerView.Adapter<Words
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Log.i("meaning",wordData.get(position).getMeaning());
-//                FirebaseFirestore.getInstance().collection("video_dictionary").document(selectedLanguage)
-//                        .collection(initials).document(words.get(position)).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-//                        Word word=documentSnapshot.toObject(Word.class);
-//                        maxVotes=word.getVotes();
-//                        most_liked=word.getMost_liked();
-//                        System.out.println("maxVotes:"+maxVotes+"\nmost_like:"+most_liked);
-//                        mContext.startActivity(new Intent(mContext, VideosOfWordActivity.class)
-//                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|FLAG_ACTIVITY_NEW_TASK)
-//                                .putExtra("saved_sign_language",selectedLanguage)
-//                                .putExtra("word",words.get(position))
-//                                .putExtra("initials",initials)
-//                                .putExtra("meaning",wordData.get(position).getMeaning())
-//                                .putExtra("maxVotes",maxVotes).putExtra("most_liked",most_liked));
-//                    }
-//                });
                 maxVotes=wordData.get(position).getVotes();
                 most_liked=wordData.get(position).getMost_liked();
-                initials=initials.substring(0,initials.length()-1)+words.get(position).charAt(0);
-                System.out.println("maxVotes:"+maxVotes+"\nmost_like:"+most_liked);
-                mContext.startActivity(new Intent(mContext, VideosOfWordActivity.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|FLAG_ACTIVITY_NEW_TASK)
-                        .putExtra("saved_sign_language",selectedLanguage)
-                        .putExtra("word",words.get(position))
-                        .putExtra("initials",initials)
-                        .putExtra("meaning",wordData.get(position).getMeaning())
-                        .putExtra("maxVotes",maxVotes).putExtra("most_liked",most_liked).putExtra("searchString",search_string));
 
+                String normalizedInitials=Normalizer.normalize(words.get(position), Normalizer.Form.NFKD);
+                char initial=normalizedInitials.charAt(0);
+                if((initial+"").matches("ᄋ")&&normalizedInitials.length()>1){
+                    System.out.println("ᄋ matches");
+                    initial=words.get(position).charAt(0);
+                }
+                initials=initials.substring(0,initials.length()-1)+initial;
+                FirebaseDatabase.getInstance().getReference().child("User").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(selectedLanguage)
+                        .child(initials)
+                        .setValue(new LastLoaded( Normalizer.normalize(words.get(position).toLowerCase(), Normalizer.Form.NFKD)))
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        System.out.println("maxVotes:"+maxVotes+"\nmost_like:"+most_liked);
+                        mContext.startActivity(new Intent(mContext, VideosOfWordActivity.class)
+                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|FLAG_ACTIVITY_NEW_TASK)
+                                .putExtra("saved_sign_language",selectedLanguage)
+                                .putExtra("word",words.get(position))
+                                .putExtra("initials",initials)
+                                .putExtra("meaning",wordData.get(position).getMeaning())
+                                .putExtra("maxVotes",maxVotes).putExtra("most_liked",most_liked)
+                                .putExtra("searchString",search_string));
+                    }
+                });
             }
         });
     }
