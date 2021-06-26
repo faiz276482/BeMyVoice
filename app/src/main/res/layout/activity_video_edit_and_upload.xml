@@ -28,6 +28,30 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/_280sdp" />
 
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/edittext_background"
+                        android:hint="@string/enter_word"
+                        android:id="@+id/word_EditTextView"
+                        android:textSize="@dimen/_15sdp"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginStart="@dimen/_13sdp"
+                        android:layout_marginEnd="@dimen/_13sdp"
+                        android:visibility="gone"/>
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/edittext_background"
+                        android:hint="@string/enter_meaning_for_non_english_words"
+                        android:id="@+id/meaning_EditTextView"
+                        android:textSize="@dimen/_15sdp"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginStart="@dimen/_13sdp"
+                        android:layout_marginEnd="@dimen/_13sdp"
+                        android:visibility="gone"/>
+
 
                     <Button
                         android:id="@+id/btn_min_max_gap"

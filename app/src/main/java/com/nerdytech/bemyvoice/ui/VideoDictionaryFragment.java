@@ -40,6 +40,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.nerdytech.bemyvoice.MainActivity;
 import com.nerdytech.bemyvoice.R;
+import com.nerdytech.bemyvoice.VideoEditAndUploadActivity;
 import com.nerdytech.bemyvoice.WordsContaingSearchStringActivity;
 import com.nerdytech.bemyvoice.adapter.WordsStartingWithAdapter;
 import com.nerdytech.bemyvoice.model.Word;
@@ -226,6 +227,10 @@ public class VideoDictionaryFragment extends Fragment {
                 if(saved_sign_language!=null && !saved_sign_language.equals("Select Language"))
                 {
                     Log.i("Button pressed","addWord");
+                    startActivity(new Intent(getContext(), VideoEditAndUploadActivity.class)
+                            .putExtra("word", (!TextUtils.isEmpty(search_edittext.getText()))?search_edittext.getText().toString().toLowerCase():null)
+                            .putExtra("saved_sign_language",saved_sign_language)
+                            .putExtra("from","VideoDictionaryFragment"));
                 }
                 else {
                     Toast.makeText(getContext(), "Please Select a Signed Language", Toast.LENGTH_SHORT).show();

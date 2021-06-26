@@ -14,6 +14,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -48,17 +49,20 @@ import com.google.firebase.storage.UploadTask;
 import com.nerdytech.bemyvoice.model.User;
 import com.nerdytech.bemyvoice.model.Video;
 import com.nerdytech.bemyvoice.model.Wallet;
+import com.nerdytech.bemyvoice.model.Word;
 import com.videotrimmer.library.utils.CompressOption;
 import com.videotrimmer.library.utils.LogMessage;
 import com.videotrimmer.library.utils.TrimType;
 import com.videotrimmer.library.utils.TrimVideo;
 
 import java.io.File;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+import static android.view.View.GONE;
 
 public class VideoEditAndUploadActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -89,6 +93,9 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
     String meaning;
     String PreferenceKey="beMyVoice";
     private static final String TAG = "VideoEditAndUploadActivity";
+    String from;
+    String normalized_word;
+    EditText wordEditText,meaningEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +104,8 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
         videoView = findViewById(R.id.video_view);
         progressBar=findViewById(R.id.progressBar);
         progressBar_tv=findViewById(R.id.progressBar_tv);
+        meaningEditText=findViewById(R.id.meaning_EditTextView);
+        wordEditText=findViewById(R.id.word_EditTextView);
 
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
@@ -113,18 +122,42 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
 
         mediaController = new MediaController(this);
         Intent intent = getIntent();
+        from=intent.getStringExtra("from");
         word = intent.getStringExtra("word");
         saved_sign_language = intent.getStringExtra("saved_sign_language");
-        meaning = intent.getStringExtra("meaning");
-        initial = intent.getStringExtra("initials");
-        maxVotes=intent.getIntExtra("maxVotes",0);
-        most_liked=intent.getStringExtra("most_liked");
+        if(from==null) {
+            meaning = intent.getStringExtra("meaning");
+            initial = intent.getStringExtra("initials");
+            maxVotes = intent.getIntExtra("maxVotes", 0);
+            most_liked = intent.getStringExtra("most_liked");
+            sRef= FirebaseStorage.getInstance().getReference().child("videos")
+                    .child(saved_sign_language)
+                    .child(initial).child(word)
+                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid()+".mp4");
+        }
+        else{
+            meaning = "";
+//            initial = intent.getStringExtra("initials");
+            maxVotes = 0;
+            most_liked = "default";
+
+            wordEditText.setVisibility(View.VISIBLE);
+            meaningEditText.setVisibility(View.VISIBLE);
+            if(word!=null) {
+                normalized_word = Normalizer.normalize(word, Normalizer.Form.NFKD);
+                char ch = normalized_word.charAt(0);
+                if ((ch + "").matches("ᄋ") && normalized_word.length() > 1) {
+                    System.out.println("ᄋ matches");
+                    ch = word.charAt(0);
+                }
+                initial = "Words starting with " + ch;
+                wordEditText.setText(word);
+            }
+
+        }
         System.out.println("saved sign language=" + saved_sign_language);
         System.out.println("In "+TAG+":\t" + saved_sign_language + ":\t" + word + ":\t" + meaning);
-        sRef= FirebaseStorage.getInstance().getReference().child("videos")
-                .child(saved_sign_language)
-                .child(initial).child(word)
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid()+".mp4");
+
 
         findViewById(R.id.btn_min_max_gap).setOnClickListener(this);
         findViewById(R.id.btn_upload).setOnClickListener(this);
@@ -180,7 +213,8 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
     {
         if(uri!=null)
         {
-
+            wordEditText.setVisibility(GONE);
+            meaningEditText.setVisibility(GONE);
             progressBar.setVisibility(View.VISIBLE);
             progressBar_tv.setVisibility(View.VISIBLE);
             Log.i("URI",uri.getPath());
@@ -292,7 +326,47 @@ public class VideoEditAndUploadActivity extends AppCompatActivity implements Vie
             if(uri!=null)
             {
 //                Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show();
-                upload();
+                if(from==null) {
+                    upload();
+                }
+                else{
+                    if(TextUtils.isEmpty(wordEditText.getText())){
+                        Toast.makeText(this, "Please enter the word for which you are entering the video.", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        word=wordEditText.getText().toString();
+                        word=(word.charAt(0) + "").toUpperCase() + word.substring(1).toLowerCase();
+                        meaning=meaningEditText.getText().toString();
+                        normalized_word = Normalizer.normalize(word, Normalizer.Form.NFKD).toUpperCase();
+                        char ch = normalized_word.charAt(0);
+                        if ((ch + "").matches("ᄋ") && normalized_word.length() > 1) {
+                            System.out.println("ᄋ matches");
+                            ch = word.charAt(0);
+                        }
+                        initial = "Words starting with " + ch;
+                        sRef= FirebaseStorage.getInstance().getReference().child("videos")
+                                .child(saved_sign_language)
+                                .child(initial).child(word)
+                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid()+".mp4");
+                        DocumentReference docRef = FirebaseFirestore.getInstance().collection("video_dictionary")
+                                .document(saved_sign_language)
+                                .collection(initial)
+                                .document(word);
+                        Word obj = new Word(meaning, most_liked, maxVotes, normalized_word.toLowerCase());
+                        System.out.println(saved_sign_language+":"+initial+":"+(word.charAt(0) + "").toUpperCase() + word.substring(1).toLowerCase()+":"+normalized_word.toLowerCase()+":"+most_liked);
+
+
+                        docRef.set(obj).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                upload();
+                            }
+                        });
+                    }
+                }
+            }
+            else{
+                Toast.makeText(this, "Please Select a video first", Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -98,4 +98,6 @@
     <string name="earn_1_coins">Earn 1 coin</string>
     <string name="earn_5_coins">Earn 5 coins</string>
     <string name="buy_or_earn_coins">Buy/Earn Coins</string>
+    <string name="enter_meaning_for_non_english_words">Enter Meaning for non-english words</string>
+    <string name="enter_word">Enter Word</string>
 </resources>
